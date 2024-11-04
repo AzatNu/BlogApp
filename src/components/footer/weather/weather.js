@@ -1,44 +1,40 @@
 import { useEffect, useState } from "react";
+import { weatherErrorMessage } from "../../../const";
 import styled from "styled-components";
+const errorMessage = weatherErrorMessage[0];
 const Weather = styled.div`
     width: 400px;
     height: 110px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     border-radius: 20px;
-    background-color: rgba(128, 128, 128, 0.8);
+    background-color: white;
     margin-left: 20px;
     font-size: 10px;
-    > * {
-        text-align: left;
-    }
+    align-items: center;
+    justify-content: center;
+
     > * h2 {
-        margin: 10px 10px 5px 20px;
+        margin: 0px 10px 10px 20px;
     }
     > * p {
-        margin-left: 10px;
+        width: 350px;
         font-size: 15px;
-        margin: 5px 10px 10px 20px;
+        margin: 0 10px 10px 20px;
     }
 `;
-const LoadingSpiner = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 100%;
-    width: 1000px;
-    margin: 5px 10px 10px 20px;
-    font-size: 10px;
-    width: 10px;
-    height: 10px;
-    border: 10px solid #f3f3f3;
-    border-top: 10px solid #3498db;
+const Loader = styled.div`
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    animation: spin 1s linear infinite;
-    @keyframes spin {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    animation: load 1s infinite;
+    border: 5px dashed green;
+    @keyframes load {
         0% {
             transform: rotate(0deg);
         }
@@ -47,55 +43,47 @@ const LoadingSpiner = styled.div`
         }
     }
 `;
+
 export const WeatherBlock = () => {
     const [city, setCity] = useState("");
     const [temp, setTemp] = useState(0);
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(true);
+    const [error, setError] = useState(false);
+
     useEffect(() => {
         setLoading(true);
         fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=Kazan&lat=33.44&lon=-94.04&lang=ru&appid=ccd7653bcd6a60de32734a5fee59e9eb`
+            `https://api.openweathermap.org/data/2.5/weather?lang=ru&q=Kazan&appid=5f188283df126b30c5228bf78a6fd988`
         )
-            .then((response) => {
-                return response.json();
-            })
-
+            .then((response) => response.json())
             .then(({ name, main, weather }) => {
                 setCity(name);
-                setTemp(Math.round(main.temp));
+                setTemp(Math.round(main.temp - 273.15));
                 setDescription(weather[0].description);
+                setError(false);
             })
-            .catch((error) => {
-                setError(true);
-            })
-            .finally(setLoading(false));
+            .catch(() => setError(true))
+            .finally(() => setLoading(false));
     }, []);
+    const date = new Date().toLocaleString("ru", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
 
     return (
         <Weather>
             {loading ? (
-                <LoadingSpiner></LoadingSpiner>
+                <Loader />
             ) : (
-                <div>
-                    <h2>
-                        Погода в городе: <br></br>
-                        {error ? `Данные о погоде не доступны` : city}
-                    </h2>
-                </div>
-            )}
-            {loading ? (
-                <LoadingSpiner></LoadingSpiner>
-            ) : (
-                <div>
+                <p>
+                    <h2>{error ? `${errorMessage}` : `${city}, ${date}  `}</h2>
                     <p>
-                        Температура:{" "}
-                        {error
-                            ? `Данные о погоде не доступны`
-                            : `${temp}°C; ${description}`}
+                        Температура: {error ? `${errorMessage}` : `${temp}°C`}
                     </p>
-                </div>
+                    <p>Описание: {error ? `${errorMessage}` : description}</p>
+                </p>
             )}
         </Weather>
     );

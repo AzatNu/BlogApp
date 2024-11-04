@@ -1,11 +1,71 @@
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { ROLE } from "../../../const";
+import {
+    selectUserRole,
+    selectUserLogin,
+    selectUserSession,
+} from "../../../selectors";
+import { logout } from "../../../bff/actions";
+
+export const StyledControlPanel = ({ clasName }) => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const roleId = useSelector(selectUserRole);
+    const login = useSelector(selectUserLogin);
+    const session = useSelector(selectUserSession);
+    console.log(roleId, login);
+    return (
+        <ControlPanel className={clasName}>
+            <StyledUserLogin title={`Вы авторизовались как ${login}`}>
+                {login}
+            </StyledUserLogin>
+            <ControlPanelButton title="Назад" onClick={() => navigate(-1)}>
+                <i className="fa fa-arrow-left" aria-hidden="true"></i>
+            </ControlPanelButton>
+
+            <Link to="/users" style={{ textDecoration: "none" }}>
+                <ControlPanelButton
+                    title="Пользователи"
+                    disabled={roleId !== ROLE.ADMIN}
+                >
+                    <i className="fa fa-users" aria-hidden="true"></i>
+                </ControlPanelButton>
+            </Link>
+            <Link to="/post" style={{ textDecoration: "none" }}>
+                <ControlPanelButton title="Создать новую статью">
+                    <i className="fa fa-file-text-o" aria-hidden="true"></i>
+                </ControlPanelButton>
+            </Link>
+            {roleId === ROLE.GUEST ? (
+                <Link to="/login" style={{ textDecoration: "none" }}>
+                    <ControlPanelButton
+                        title="Войти в аккаунт"
+                        style={{ backgroundColor: "green" }}
+                    >
+                        <i className="fa fa-sign-in" aria-hidden="true"></i>
+                    </ControlPanelButton>
+                </Link>
+            ) : (
+                <ControlPanelButton
+                    title="Выйти из аккаунта"
+                    style={{ backgroundColor: "#FF6347" }}
+                    onClick={() => {
+                        dispatch(logout(session));
+                    }}
+                >
+                    <i className="fa fa-sign-out" aria-hidden="true"></i>
+                </ControlPanelButton>
+            )}
+        </ControlPanel>
+    );
+};
 const ControlPanel = styled.div`
     display: flex;
     float: right;
     width: 500px;
     height: 100px;
-    text-align: right;
     align-items: center;
     font-size: 15px;
     justify-content: flex-end;
@@ -18,13 +78,16 @@ const ControlPanelButton = styled.button`
     border-radius: 50%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     &:hover {
         background-color: yellow;
     }
     border: none;
     font-size: 20px;
     margin-right: 10px;
-    &: hover {
+    &:hover {
         animation: scale 1s infinite;
         @keyframes scale {
             0% {
@@ -38,33 +101,10 @@ const ControlPanelButton = styled.button`
             }
         }
     }
-    > * {
-        color: black;
-        text-decoration: none;
-    }
+    text-decoration: none;
 `;
-export const StyledControlPanel = ({ clasName }) => {
-    const navigate = useNavigate();
-    return (
-        <ControlPanel className={clasName}>
-            <ControlPanelButton title="Назад" onClick={() => navigate(-1)}>
-                <i className="fa fa-arrow-left" aria-hidden="true"></i>
-            </ControlPanelButton>
-            <ControlPanelButton title="Пользователи">
-                <Link to="/users">
-                    <i className="fa fa-users" aria-hidden="true"></i>
-                </Link>
-            </ControlPanelButton>
-            <ControlPanelButton title="Создать новую статью">
-                <Link to="/post">
-                    <i className="fa fa-file-text-o" aria-hidden="true"></i>
-                </Link>
-            </ControlPanelButton>
-            <ControlPanelButton title="Войти в аккаунт">
-                <Link to="/login">
-                    <i className="fa fa-sign-in" aria-hidden="true"></i>
-                </Link>
-            </ControlPanelButton>
-        </ControlPanel>
-    );
-};
+
+const StyledUserLogin = styled.div`
+    margin-right: 20px;
+    font-size: 30px;
+`;

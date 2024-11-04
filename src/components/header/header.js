@@ -14,7 +14,6 @@ const Logo = styled.div`
     background-color: rgba(255, 255, 0, 0.5);
     margin: 0 20px;
      &:hover {    background-color: yellow;
-
      animation: scale 1s infinite;
         @keyframes scale {
             0% {
@@ -73,7 +72,7 @@ export const StyledHeader = styled(Header)`
     display: flex;
     width: 1000px;
     height: 120px;
-    background-image: linear-gradient(to bottom, #76da81, #76da81);
+    background-image: linear-gradient(to bottom, #76da81, azure);
     align-items: center;
     font-size: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -84,4 +83,5 @@ export const StyledHeader = styled(Header)`
     > *:last-child {
         margin-left: auto;
     }
+    z-index: 0;
 `;

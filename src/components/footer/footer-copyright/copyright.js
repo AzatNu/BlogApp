@@ -9,7 +9,7 @@ const Copyright = styled.div`
     justify-content: center;
     > p {
         text-align: center;
-        font-size: 15px;
+        font-size: 10px;
     }
 `;
 export const CopyrightBlock = () => {
