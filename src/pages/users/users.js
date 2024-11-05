@@ -25,8 +25,8 @@ export const Users = () => {
     useEffect(() => {
         getUsers().then((users) => setUsersList([...users]));
     }, [updateUsersList]);
-    const { requestChangeUserRole } = useRequestChangeUserRole();
-    const { requestDeleteUser } = useRequestDeleteUser();
+    const { changeUserRole } = useRequestChangeUserRole();
+    const { deleteUser } = useRequestDeleteUser();
     return (
         <UsersContainer>
             {userRole !== "0" ? (
@@ -46,7 +46,7 @@ export const Users = () => {
                                     className="fa fa-check"
                                     title="согласен"
                                     onClick={() => {
-                                        requestDeleteUser(userId);
+                                        dispatch(deleteUser(userId));
                                         dispatch({
                                             type: "DELETE_USER_BUTTON_CLICK",
                                             deleteButtonClick:
@@ -78,7 +78,7 @@ export const Users = () => {
                     ) : (
                         <>
                             <i className="fa fa-users" aria-hidden="true">
-                                Пользователи
+                                &nbsp;Пользователи
                             </i>
                             <div>
                                 <p>
@@ -94,9 +94,11 @@ export const Users = () => {
                                         <select
                                             value={user.role_id}
                                             onChange={(event) => {
-                                                requestChangeUserRole(
-                                                    user.id,
-                                                    event.target.value
+                                                dispatch(
+                                                    changeUserRole(
+                                                        user.id,
+                                                        event.target.value
+                                                    )
                                                 );
                                             }}
                                         >
@@ -110,7 +112,7 @@ export const Users = () => {
                                         </select>
                                         <span>
                                             <button
-                                                className="fa fa-trash"
+                                                className="fa fa-user-times"
                                                 title="удалить пользователя"
                                                 onClick={() => {
                                                     dispatch({
@@ -166,13 +168,16 @@ const ConfirmationOfDeletion = styled.div`
 
 const ErrorAccess = styled.div`
     display: flex;
+    position: fixed;
+    top: 45%;
+    height: 100px;
     align-items: center;
-    height: 50px;
-    font-size: 30px;
-    border-radius: 10px;
     justify-content: center;
-    animation: shake 0.5s ease-in-out;
-    background-color: rgba(256, 100, 100, 0.5);
+    height: 50px;
+    font-size: 35px;
+    border-radius: 10px;
+    animation: shake 0.7s ease-in-out;
+    color: red;
     @keyframes shake {
         0% {
             transform: translateX(0);
@@ -199,7 +204,6 @@ const UsersContainer = styled.div`
     align-items: center;
     margin: 120px 0 120px 0;
     border-radius: 20px;
-
     i {
         width: 100%;
         height: 50px;
@@ -277,5 +281,4 @@ const UsersContainer = styled.div`
                     }
                 }
             }
-
 `;

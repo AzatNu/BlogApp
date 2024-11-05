@@ -1,18 +1,23 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectUpdateUserList } from "../../../selectors/index";
-export const useRequestDeleteUser = (id) => {
-    const dispatch = useDispatch();
+
+export const useRequestDeleteUser = () => {
     const updateUsersList = useSelector(selectUpdateUserList);
-    const requestDeleteUser = (id) => {
-        fetch(`http://localhost:3005/users/${id}`, {
-            method: "DELETE",
-        }).then((response) => {
-            return response.json();
-        });
-        dispatch({
-            type: "SET_UPDATE_USER_LIST",
-            updateUsersList: !updateUsersList,
-        });
+    const deleteUser = (id) => {
+        return async (dispatch) => {
+            const response = await fetch(`http://localhost:3005/users/${id}`, {
+                method: "DELETE",
+            });
+            if (response.ok) {
+                dispatch({
+                    type: "SET_UPDATE_USER_LIST",
+                    updateUsersList: !updateUsersList,
+                });
+            } else {
+                console.error("Ошибка удаления пользователя");
+            }
+        };
     };
-    return { requestDeleteUser };
+
+    return { deleteUser };
 };

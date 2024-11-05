@@ -15,7 +15,6 @@ export const StyledControlPanel = ({ clasName }) => {
     const roleId = useSelector(selectUserRole);
     const login = useSelector(selectUserLogin);
     const session = useSelector(selectUserSession);
-    console.log(roleId, login);
     return (
         <ControlPanel className={clasName}>
             <StyledUserLogin title={`Вы авторизовались как ${login}`}>
@@ -24,7 +23,6 @@ export const StyledControlPanel = ({ clasName }) => {
             <ControlPanelButton title="Назад" onClick={() => navigate(-1)}>
                 <i className="fa fa-arrow-left" aria-hidden="true"></i>
             </ControlPanelButton>
-
             <Link to="/users" style={{ textDecoration: "none" }}>
                 <ControlPanelButton
                     title="Пользователи"
@@ -33,9 +31,9 @@ export const StyledControlPanel = ({ clasName }) => {
                     <i className="fa fa-users" aria-hidden="true"></i>
                 </ControlPanelButton>
             </Link>
-            <Link to="/post" style={{ textDecoration: "none" }}>
-                <ControlPanelButton title="Создать новую статью">
-                    <i className="fa fa-file-text-o" aria-hidden="true"></i>
+            <Link to="/post">
+                <ControlPanelButton title="Статьи">
+                    <i class="fa fa-file-text" aria-hidden="true"></i>
                 </ControlPanelButton>
             </Link>
             {roleId === ROLE.GUEST ? (
