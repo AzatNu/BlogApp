@@ -16,11 +16,10 @@ export const Post = () => {
         );
         setPosts(filteredPosts);
     };
-
     return (
         <PostPage>
             <h2>
-                <i className="fa fa-file-text"> &nbsp;Статьи</i>
+                <h1 className="fa fa-file-text"> Статьи</h1>
             </h2>
             <SearchInPosts>
                 <input
@@ -30,27 +29,26 @@ export const Post = () => {
                         setSearchQuery(e.target.value);
                     }}
                 />
-                <h
+                <button
                     className="fa fa-refresh"
                     title="Сбросить поиск"
                     onClick={() => {
                         getPosts().then((data) => setPosts(data));
                         setSearchQuery("");
                     }}
-                ></h>
-                <h
+                ></button>
+                <button
                     className="fa fa-search"
-                    title="Сбросить поиск"
+                    title="Поиск"
                     onClick={() => {
                         searchInPosts();
-                        setSearchQuery("");
                     }}
-                ></h>
+                ></button>
             </SearchInPosts>
             <PostContainer>
-                {posts.map((post, index) => (
-                    <Link to={`/post/${post.id}`}>
-                        <div key={index}>
+                {posts.map((post) => (
+                    <Link to={`/post/${post.id}`} key={post.id}>
+                        <div>
                             <p>{post.published_at}</p>
                             <img src={post.image_url} alt="post" />
                             <h2>{post.title}</h2>
@@ -78,7 +76,7 @@ const SearchInPosts = styled.div`
         padding: 0 10px;
         outline: none;
     }
-    h {
+   button{
         display: flex;
         width: 50px;
         height: 50px;
@@ -126,7 +124,7 @@ const PostContainer = styled.div`
             height: 80px;
             margin: 10px;
             color: black;
-            font-size: 20px;
+            font-size: 15px;
         }
         p {
             margin: 0;
@@ -171,7 +169,6 @@ const PostPage = styled.div`
     }
     h2 {
         font-size: 30px;
-
         margin: 0;
     }
 `;

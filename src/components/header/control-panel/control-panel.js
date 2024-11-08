@@ -24,17 +24,26 @@ export const StyledControlPanel = ({ clasName }) => {
                 <i className="fa fa-arrow-left" aria-hidden="true"></i>
             </ControlPanelButton>
             <Link to="/users" style={{ textDecoration: "none" }}>
-                <ControlPanelButton
-                    title="Пользователи"
-                    disabled={roleId !== ROLE.ADMIN}
-                >
-                    <i className="fa fa-users" aria-hidden="true"></i>
-                </ControlPanelButton>
+                {roleId === ROLE.ADMIN ? (
+                    <ControlPanelButton
+                        title="Пользователи"
+                        disabled={roleId !== ROLE.ADMIN}
+                    >
+                        <i className="fa fa-users" aria-hidden="true"></i>
+                    </ControlPanelButton>
+                ) : null}
             </Link>
             <Link to="/post">
                 <ControlPanelButton title="Статьи">
-                    <i class="fa fa-file-text" aria-hidden="true"></i>
+                    <i className="fa fa-file-text" aria-hidden="true"></i>
                 </ControlPanelButton>
+            </Link>
+            <Link to="/postCreate">
+                {roleId === ROLE.ADMIN || roleId === ROLE.MODERATOR ? (
+                    <ControlPanelButton title="Создать статью">
+                        <i className="fa fa-plus" aria-hidden="true"></i>
+                    </ControlPanelButton>
+                ) : null}
             </Link>
             {roleId === ROLE.GUEST ? (
                 <Link to="/login" style={{ textDecoration: "none" }}>
@@ -67,6 +76,9 @@ const ControlPanel = styled.div`
     align-items: center;
     font-size: 15px;
     justify-content: flex-end;
+    > a {
+           text-decoration: none;
+    }
 `;
 
 const ControlPanelButton = styled.button`
@@ -99,7 +111,6 @@ const ControlPanelButton = styled.button`
             }
         }
     }
-    text-decoration: none;
 `;
 
 const StyledUserLogin = styled.div`

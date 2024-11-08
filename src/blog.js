@@ -6,6 +6,7 @@ import {
     Users,
     Post,
     PostId,
+    PostCreate,
 } from "./pages/index";
 
 import styled from "styled-components";
@@ -34,6 +35,7 @@ export const Blog = () => {
                 <Route path="/users" element={<Users />} />
                 <Route path="/post" element={<Post />} />
                 <Route path="/post/:postId" element={<PostId />} />
+                <Route path="/postCreate" element={<PostCreate />}/>
                 <Route path="*" element={<div>Ошибка</div>} />
             </Routes>
             <StyledFooter />

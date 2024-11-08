@@ -10,7 +10,7 @@ import { useDispatch, useStore } from "react-redux";
 import {
     AuthorizationBackground,
     StyledAuthorization,
-} from "../styeld-modal-overlay";
+} from "../../components/styeld-modal-overlay";
 const authFormSchema = yup.object().shape({
     login: yup
         .string()

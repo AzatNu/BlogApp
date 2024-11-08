@@ -11,10 +11,8 @@ export const StyledAuthorization = styled.div`
     justify-content: center;
     align-items: center;
 background-image: linear-gradient(to top, #76da81, azure);
-    border-radius: 20px;
+    border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
-
-
     h2 {
         font-size: 30px;
         margin: 0;
@@ -77,8 +75,8 @@ background-image: linear-gradient(to top, #76da81, azure);
         width: 100%;
         height: 50px;
         margin: 10px 0 0 0;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
         border: none;
         font-size: 20px;
         background-color: yellow;

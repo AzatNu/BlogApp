@@ -9,7 +9,7 @@ import { useDispatch, useStore } from "react-redux";
 import {
     AuthorizationBackground,
     StyledAuthorization,
-} from "../styeld-modal-overlay";
+} from "../../components/styeld-modal-overlay";
 
 const regFormSchema = yup.object().shape({
     login: yup

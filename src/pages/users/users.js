@@ -7,11 +7,13 @@ import {
     selectDeleteUserLogin,
     selectUserId,
 } from "../../selectors/index";
-
+import { ErrorAccess } from "../../components";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useRequestChangeUserRole } from "./request-change-role";
 import { useRequestDeleteUser } from "./request-delete-user";
+import { ROLE } from "../../const";
+import { ConfirmationOfDeletion } from "../../components";
 
 export const Users = () => {
     const userRole = useSelector(selectUserRole);
@@ -29,17 +31,19 @@ export const Users = () => {
     const { deleteUser } = useRequestDeleteUser();
     return (
         <UsersContainer>
-            {userRole !== "0" ? (
+            {userRole !== ROLE.ADMIN ? (
                 <ErrorAccess>
                     У вас нет прав для просмотра этой страницы
                 </ErrorAccess>
             ) : (
                 <>
+                    {}
                     {deleteButtonClick ? (
                         <ConfirmationOfDeletion>
                             <h3>
                                 Вы действительно хотите удалить пользователя{" "}
-                                {userLogin}?
+                                <b>{userLogin}</b>?<br />
+                                Это действие необратимо.
                             </h3>
                             <span>
                                 <button
@@ -77,9 +81,9 @@ export const Users = () => {
                         </ConfirmationOfDeletion>
                     ) : (
                         <>
-                            <i className="fa fa-users" aria-hidden="true">
+                            <h1 className="fa fa-users" aria-hidden="true">
                                 &nbsp;Пользователи
-                            </i>
+                            </h1>
                             <div>
                                 <p>
                                     <span>Логин</span>
@@ -142,76 +146,24 @@ export const Users = () => {
     );
 };
 
-const ConfirmationOfDeletion = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
-    background-image: linear-gradient(to top, #76da81, azure);
-    color: black;
-    margin: 130px 50px 20px 50px;
-    border-radius: 20px;
-    h3 {
-        font-size: 25px;
-        margin: 20px 0 20px 0;
-    }
-    button {
-        align-items: center;
-        justify-content: center;
-        width: 100px;
-        height: 50px;
-        margin: 10px;
-        border-radius: 10px;
-        font-size: 25px;
-    }
-`;
 
-const ErrorAccess = styled.div`
-    display: flex;
-    position: fixed;
-    top: 45%;
-    height: 100px;
-    align-items: center;
-    justify-content: center;
-    height: 50px;
-    font-size: 35px;
-    border-radius: 10px;
-    animation: shake 0.7s ease-in-out;
-    color: red;
-    @keyframes shake {
-        0% {
-            transform: translateX(0);
-        }
-        25% {
-            transform: translateX(-5px);
-        }
-        50% {
-            transform: translateX(5px);
-        }
-        75% {
-            transform: translateX(-5px);
-        }
-        100% {
-            transform: translateX(0);
-        }
-    }
-`;
+
 const UsersContainer = styled.div`
     display: flex;
     flex-direction: column;
     color: white;
     justify-content: center;
     align-items: center;
-    margin: 120px 0 120px 0;
     border-radius: 20px;
-    i {
+      margin: 120px 0 120px 0;
+    h1 {
         width: 100%;
         height: 50px;
         display: flex;
         font-size: 30px;
         justify-content: center;
         align-items: center;
-        margin: 0 20px 5px 20px;
+
         border-radius: 20px;
     }
     div {
@@ -262,12 +214,12 @@ const UsersContainer = styled.div`
             outline: none;
             border: none;
             text-align-last: center;
-            background-color: rgba(255, 255, 0, 0.3);
+            background-color: rgba(255, 255, 0, 0.8);
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
             > * button:hover {
-                background-color: rgba(255, 255, 0, 0.5);
+                background-color: rgba(255, 255, 0);
                 animation: scale 1s infinite;
                 @keyframes scale {
                     0% {
