@@ -1,14 +1,17 @@
 import styled from "styled-components";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ErrorAccess } from "../../components";
 import { selectUserRole, selectUserLogin } from "../../selectors";
 import { ROLE } from "../../const";
 import * as yup from "yup";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRequestCreatePost } from "./request-create-post";
+import { useEffect, useState } from "react";
+import { getPost } from "../../bff/api";
+import { useParams } from "react-router-dom";
+import { useRequestUpdatePostId} from "./request-update-post-id";
 
-const createPostFormSchema = yup.object().shape({
+const editPostFormSchema = yup.object().shape({
     title: yup
         .string()
         .required(`*Заголовок обязателен для заполнения`)
@@ -28,11 +31,21 @@ const createPostFormSchema = yup.object().shape({
         ),
 });
 
-export const PostCreate = () => {
-   const dispatch = useDispatch();
+export const PostEdit = () => {
+    const [post, setPost] = useState({});
+    const { postId } = useParams();
+    useEffect(() => {
+        getPost(postId).then((data) => {
+            setPost(data);
+            setValue("title", data.title);
+            setValue("content", data.content);
+            setValue("image", data.image_url);
+        });
+    }, [postId]);
+
+    const dispatch = useDispatch();
     const userRole = useSelector(selectUserRole);
     const userLogin = useSelector(selectUserLogin);
-
     const {
         register,
         handleSubmit,
@@ -40,16 +53,15 @@ export const PostCreate = () => {
         setValue,
     } = useForm({
         defaultValues: {
-            title: "",
-            content: "",
-            image: "",
+            title: `${post.title}`,
+            content:  `${post.content}`,
+            image: `${post.image_url}`,
         },
-        resolver: yupResolver(createPostFormSchema),
+        resolver: yupResolver(editPostFormSchema),
     });
-
-    const { requestCreatePost } = useRequestCreatePost();
-    const onSubmit = ( register) => {
-        dispatch(requestCreatePost(register.title, register.content, register.image, userLogin));
+    const { requestUpdatePostId  } = useRequestUpdatePostId();
+    const onSubmit = (register) => {
+        dispatch(requestUpdatePostId(postId, register.title, register.content, register.image, userLogin));
     };
 
     const formError =
@@ -57,15 +69,15 @@ export const PostCreate = () => {
         errors?.content?.message ||
         errors?.image?.message;
     return (
-        <PostCreatePage>
+        <PostEditPage>
             {userRole !== ROLE.MODERATOR && userRole !== ROLE.ADMIN ? (
                 <ErrorAccess>
                     У вас нет прав для просмотра этой страницы
                 </ErrorAccess>
             ) : (
                 <>
-                    <h1 className="fa fa-plus"> Создать новую статью</h1>
-                    <PostCreateContainer>
+                    <h1 className="fa fa-pencil"> Редактор статьи</h1>
+                    <PostEditContainer>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <h2>Заголовок</h2>
                             <input
@@ -74,8 +86,13 @@ export const PostCreate = () => {
                                 {...register("title")}
                                 onBlur={(e) => setValue(e.target.value)}
                             />
-                            <button type="button" title="Очистить заголовок"
-                            onClick={() => setValue("title", "")}>Очистить</button>
+                            <button
+                                type="button"
+                                title="Очистить заголовок"
+                                onClick={() => setValue("title", "")}
+                            >
+                                Очистить
+                            </button>
                             <h2>Изображение</h2>
                             <input
                                 type="text"
@@ -83,30 +100,40 @@ export const PostCreate = () => {
                                 {...register("image")}
                                 onBlur={(e) => setValue(e.target.value)}
                             />
-                            <button  type="button" title="Очистить изображение"
-                            onClick={() => setValue("image", "")}>Очистить</button>
+                            <button
+                                type="button"
+                                title="Очистить изображение"
+                                onClick={() => setValue("image", "")}
+                            >
+                                Очистить
+                            </button>
                             <h2>Текст статьи</h2>
                             <textarea
                                 placeholder="Напишите текст статьи"
                                 {...register("content")}
                                 onBlur={(e) => setValue(e.target.value)}
                             />
-                            <button  type="button" title="Очистить текст"
-                            onClick={() => setValue("content", "")}>Очистить</button>
+                            <button
+                                type="button"
+                                title="Очистить текст"
+                                onClick={() => setValue("content", "")}
+                            >
+                                Очистить
+                            </button>
                             <p>Вы подпишитесь как: {userLogin}</p>
                             {formError && <span>{formError}</span>}
                             <button type="submit" disabled={!!formError}>
-                                Создать
+                               Сохранить изменения
                             </button>
                         </form>
-                    </PostCreateContainer>
+                    </PostEditContainer>
                 </>
             )}
-        </PostCreatePage>
+        </PostEditPage>
     );
 };
 
-const PostCreateContainer = styled.div`
+const PostEditContainer = styled.div`
     width: 100%;
     height: 100%;
     display: flex;
@@ -133,7 +160,6 @@ const PostCreateContainer = styled.div`
             padding: 0 10px;
             outline: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-
         }
         button {
             background: yellow;
@@ -211,7 +237,7 @@ const PostCreateContainer = styled.div`
         background-image: linear-gradient(to top, #76da81, azure);
     }
 `;
-const PostCreatePage = styled.div`
+const PostEditPage = styled.div`
     wdith: 100%;
     height: 100%;
     display: flex;

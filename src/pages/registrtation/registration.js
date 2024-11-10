@@ -53,6 +53,7 @@ export const Registration = () => {
                 return;
             }
             dispatch(setUser(res));
+            sessionStorage.setItem("userData", JSON.stringify(res));
             navigate("/");
         });
     };

@@ -11,7 +11,7 @@ body {
 html,
 body,
 #root {
-    height: 100%;
+height: 100%;
     background: url("./bgimage/bfc38585-c7b4-5508-9ff8-77bc7ab4576f.jpeg")
         no-repeat center center fixed;
     -webkit-background-size: cover;

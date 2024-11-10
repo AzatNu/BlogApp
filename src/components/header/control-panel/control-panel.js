@@ -15,7 +15,12 @@ export const StyledControlPanel = ({ clasName }) => {
     const roleId = useSelector(selectUserRole);
     const login = useSelector(selectUserLogin);
     const session = useSelector(selectUserSession);
+    const onLogout = () => {
+        dispatch(logout(session));
+        sessionStorage.removeItem("userData");
+    }
     return (
+
         <ControlPanel className={clasName}>
             <StyledUserLogin title={`Вы авторизовались как ${login}`}>
                 {login}
@@ -59,7 +64,7 @@ export const StyledControlPanel = ({ clasName }) => {
                     title="Выйти из аккаунта"
                     style={{ backgroundColor: "#FF6347" }}
                     onClick={() => {
-                        dispatch(logout(session));
+                        onLogout();
                     }}
                 >
                     <i className="fa fa-sign-out" aria-hidden="true"></i>

@@ -92,10 +92,6 @@ const SearchInPosts = styled.div`
         font-size: 25px;
         transition: all 0.5s ease;
         margin: 0 5px 0 5px;
-        &:hover {
-            background-image: linear-gradient(to top, yellow, yellow);
-            transform: scale(1.05);
-        }
     }
 `;
 const PostContainer = styled.div`

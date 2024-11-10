@@ -50,6 +50,7 @@ export const Authorization = () => {
                 return;
             }
             dispatch(setUser(res));
+            sessionStorage.setItem("userData", JSON.stringify(res));
             navigate("/");
         });
     };
