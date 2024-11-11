@@ -37,6 +37,7 @@ export const PostId = () => {
     const { requestDeletePost } = useRequestDeletePost();
     const { requestDeleteComment } = useRequestDeleteComment();
     const { requestCreateComment } = useRequestCreateComment();
+
     return (
         <PostIdPage>
             <PostIdContainer>
@@ -86,7 +87,7 @@ export const PostId = () => {
                                         {post.author}
                                     </p>
                                     {(roleId === ROLE.ADMIN ||
-                                        roleId === ROLE.MODERATOR) && (
+                                        roleId === ROLE.MODERATOR)? (
                                         <>
                                             {" "}
                                             <Link to={`/post/${postId}/edit`}>
@@ -111,6 +112,9 @@ export const PostId = () => {
                                                 }
                                             ></button>
                                         </>
+                                    ):(<span style={{ marginLeft: "92px" }
+                                    }></span>
+
                                     )}
                                 </div>
                             </div>
@@ -248,18 +252,8 @@ const Comments = styled.div`
             cursor: pointer;
             outline: none;
             &:hover {
-                animation: scale 1s infinite;
-                @keyframes scale {
-                    0% {
-                        transform: scale(1);
-                    }
-                    50% {
-                        transform: scale(1.1);
-                    }
-                    100% {
-                        transform: scale(1);
-                    }
-                }
+                animation: shake 0.5s;
+                animation-iteration-count: infinite;
             }
         }
     }
@@ -315,7 +309,6 @@ const Header = styled.div`
     color: black;
     border-radius: 10px;
     align-items: center;
-
     img {
         border-radius: 10px;
         width: 350px;
@@ -362,18 +355,8 @@ const Header = styled.div`
                 border: none;
                 font-size: 20px;
                 &:hover {
-                    animation: scale 1s infinite;
-                    @keyframes scale {
-                        0% {
-                            transform: scale(1);
-                        }
-                        50% {
-                            transform: scale(1.2);
-                        }
-                        100% {
-                            transform: scale(1);
-                        }
-                    }
+                    animation: shake 0.5s;
+                    animation-iteration-count: infinite;
                 }
             }
         }

@@ -16,10 +16,9 @@ export const useRequestUpdatePostId = () => {
                 }),
             });
             if (response.ok) {
-                backNavigate("/post");
+                backNavigate("/");
             }
         };
     };
-
     return { requestUpdatePostId };
 };

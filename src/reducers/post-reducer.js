@@ -1,5 +1,5 @@
 const initialPostState = {deletePostButtonClick: false,
-    refreshComments: false
+    refreshComments: false,
 };
 export const postReducer = (state = initialPostState, action) => {
     switch (action.type) {

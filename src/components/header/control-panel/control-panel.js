@@ -38,8 +38,8 @@ export const StyledControlPanel = ({ clasName }) => {
                     </ControlPanelButton>
                 ) : null}
             </Link>
-            <Link to="/post">
-                <ControlPanelButton title="Статьи">
+            <Link to="/">
+                <ControlPanelButton title="Главная">
                     <i className="fa fa-file-text" aria-hidden="true"></i>
                 </ControlPanelButton>
             </Link>
@@ -102,18 +102,11 @@ const ControlPanelButton = styled.button`
     border: none;
     font-size: 20px;
     margin-right: 10px;
-    &:hover {
-        animation: scale 1s infinite;
-        @keyframes scale {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-            }
+      &:hover {
+      &:hover {
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+        }
         }
     }
 `;

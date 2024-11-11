@@ -2,47 +2,7 @@ import { useEffect, useState } from "react";
 import { weatherErrorMessage } from "../../../const";
 import styled from "styled-components";
 const errorMessage = weatherErrorMessage[0];
-const Weather = styled.div`
-    width: 400px;
-    height: 110px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
-    background-color: white;
-    margin-left: 20px;
-    font-size: 10px;
-    align-items: center;
-    justify-content: center;
 
-    > * h2 {
-        margin: 0px 10px 10px 20px;
-    }
-    > * p {
-        width: 350px;
-        font-size: 15px;
-        margin: 0 10px 10px 20px;
-    }
-`;
-const Loader = styled.div`
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    animation: load 1s infinite;
-    border: 5px dashed green;
-    @keyframes load {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-`;
 
 export const WeatherBlock = () => {
     const [city, setCity] = useState("");
@@ -88,3 +48,44 @@ export const WeatherBlock = () => {
         </Weather>
     );
 };
+const Weather = styled.div`
+    width: 400px;
+    height: 110px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    background-color: white;
+    margin-left: 20px;
+    font-size: 10px;
+    align-items: center;
+    justify-content: center;
+
+    > * h2 {
+        margin: 0px 10px 10px 20px;
+    }
+    > * p {
+        width: 350px;
+        font-size: 15px;
+        margin: 0 10px 10px 20px;
+    }
+`;
+const Loader = styled.div`
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    animation: load 1s infinite;
+    border: 5px dashed green;
+    @keyframes load {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+`;

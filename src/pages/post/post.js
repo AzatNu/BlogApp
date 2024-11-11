@@ -1,13 +1,17 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { getPosts } from "../../bff/api";
+import { getComments, getPosts } from "../../bff/api";
 import { useEffect, useState } from "react";
 
 export const Post = () => {
     const [posts, setPosts] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [comments, setComments] = useState([]);
     useEffect(() => {
         getPosts().then((data) => setPosts(data));
+    }, []);
+    useEffect(() => {
+        getComments().then((data) => setComments(data));
     }, []);
 
     const searchInPosts = () => {
@@ -19,7 +23,7 @@ export const Post = () => {
     return (
         <PostPage>
             <h2>
-                <h1 className="fa fa-file-text"> Статьи</h1>
+                <h1 className="fa fa-file-text"> Главная</h1>
             </h2>
             <SearchInPosts>
                 <input
@@ -49,7 +53,11 @@ export const Post = () => {
                 {posts.map((post) => (
                     <Link to={`/post/${post.id}`} key={post.id}>
                         <div>
-                            <p>{post.published_at}</p>
+                            <p>
+                                {" "}
+                                {post.published_at}
+                                <p className="fa fa-comment"> {comments.filter((comment) => comment.post_id === post.id).length}</p>
+                            </p>
                             <img src={post.image_url} alt="post" />
                             <h2>{post.title}</h2>
                         </div>
@@ -76,7 +84,7 @@ const SearchInPosts = styled.div`
         padding: 0 10px;
         outline: none;
     }
-   button{
+    button {
         display: flex;
         width: 50px;
         height: 50px;
@@ -92,6 +100,10 @@ const SearchInPosts = styled.div`
         font-size: 25px;
         transition: all 0.5s ease;
         margin: 0 5px 0 5px;
+      &:hover {
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+        }
     }
 `;
 const PostContainer = styled.div`
@@ -106,6 +118,7 @@ const PostContainer = styled.div`
         text-decoration: none;
     }
     div {
+        height: 350px;
         background-image: linear-gradient(to top, #76da81, azure);
         border-radius: 10px;
         text-align: center;
@@ -117,28 +130,36 @@ const PostContainer = styled.div`
         }
         h2 {
             text-align: center;
-            height: 80px;
-            margin: 10px;
             color: black;
             font-size: 15px;
         }
         p {
-            margin: 0;
-            text-align: center;
+            margin: 0px 0px 0px 0px;
+            padding: 5px;
             color: black;
-            font-size: 20px;
+            font-size: 15px;
             background-image: linear-gradient(to top, #76da81, azure);
-            border-radius: 10px 10px 0px 0px;
+            display: flex;
+            border-radius: 10px 10px 0 0px;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-between;
+            i {
+                width: 100%;
+                color: black;
+                font-size: 15px;
+                margin: 0;
+            }
         }
     }
     > *:hover {
-        animation: scale 0.5s forwards;
+        animation: scale 0.2s ease-in forwards;
         @keyframes scale {
             0% {
                 transform: scale(1);
             }
             100% {
-                transform: scale(1.05);
+                transform: scale(1.1);
             }
         }
     }

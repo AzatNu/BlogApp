@@ -43,11 +43,10 @@ export const Blog = () => {
         <AppColumn>
             <StyledHeader />
             <Routes>
-                <Route path="/" element={<div> Главная страница</div>} />
+                <Route path="/" element={<Post />} />
                 <Route path="/login" element={<Authorization />} />
                 <Route path="/register" element={<Registration />} />
                 <Route path="/users" element={<Users />} />
-                <Route path="/post" element={<Post />} />
                 <Route path="/post/:postId" element={<PostId />} />
                 <Route path="/postCreate" element={<PostCreate />}/>
                 <Route path="/post/:postId/edit" element={<PostEdit />} />

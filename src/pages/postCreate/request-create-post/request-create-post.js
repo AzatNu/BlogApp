@@ -19,11 +19,10 @@ export const useRequestCreatePost = () => {
                 }),
             });
             if (response.ok) {
-                backNavigate("/post");
+                backNavigate("/");
             }
         };
     };
-
     return { requestCreatePost };
 };
 

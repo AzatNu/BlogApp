@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import { getPost } from "../../bff/api";
 import { useParams } from "react-router-dom";
-import { useRequestUpdatePostId} from "./request-update-post-id";
+import { useRequestUpdatePostId } from "./request-update-post-id";
 
 const editPostFormSchema = yup.object().shape({
     title: yup
@@ -54,14 +54,22 @@ export const PostEdit = () => {
     } = useForm({
         defaultValues: {
             title: `${post.title}`,
-            content:  `${post.content}`,
+            content: `${post.content}`,
             image: `${post.image_url}`,
         },
         resolver: yupResolver(editPostFormSchema),
     });
-    const { requestUpdatePostId  } = useRequestUpdatePostId();
+    const { requestUpdatePostId } = useRequestUpdatePostId();
     const onSubmit = (register) => {
-        dispatch(requestUpdatePostId(postId, register.title, register.content, register.image, userLogin));
+        dispatch(
+            requestUpdatePostId(
+                postId,
+                register.title,
+                register.content,
+                register.image,
+                userLogin
+            )
+        );
     };
 
     const formError =
@@ -123,7 +131,7 @@ export const PostEdit = () => {
                             <p>Вы подпишитесь как: {userLogin}</p>
                             {formError && <span>{formError}</span>}
                             <button type="submit" disabled={!!formError}>
-                               Сохранить изменения
+                                Сохранить изменения
                             </button>
                         </form>
                     </PostEditContainer>
@@ -173,18 +181,8 @@ const PostEditContainer = styled.div`
             border: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             &:hover {
-                animation: scale 1s infinite;
-                @keyframes scale {
-                    0% {
-                        transform: scale(1);
-                    }
-                    50% {
-                        transform: scale(1.1);
-                    }
-                    100% {
-                        transform: scale(1);
-                    }
-                }
+                animation: shake 0.5s;
+                animation-iteration-count: infinite;
             }
         }
         span {

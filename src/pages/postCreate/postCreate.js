@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ErrorAccess } from "../../components";
 import { selectUserRole, selectUserLogin } from "../../selectors";
 import { ROLE } from "../../const";
 import * as yup from "yup";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRequestCreatePost } from "./request-create-post";
 
@@ -29,10 +29,9 @@ const createPostFormSchema = yup.object().shape({
 });
 
 export const PostCreate = () => {
-   const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const userRole = useSelector(selectUserRole);
     const userLogin = useSelector(selectUserLogin);
-
     const {
         register,
         handleSubmit,
@@ -46,12 +45,17 @@ export const PostCreate = () => {
         },
         resolver: yupResolver(createPostFormSchema),
     });
-
     const { requestCreatePost } = useRequestCreatePost();
-    const onSubmit = ( register) => {
-        dispatch(requestCreatePost(register.title, register.content, register.image, userLogin));
+    const onSubmit = (register) => {
+        dispatch(
+            requestCreatePost(
+                register.title,
+                register.content,
+                register.image,
+                userLogin
+            )
+        );
     };
-
     const formError =
         errors?.title?.message ||
         errors?.content?.message ||
@@ -74,8 +78,13 @@ export const PostCreate = () => {
                                 {...register("title")}
                                 onBlur={(e) => setValue(e.target.value)}
                             />
-                            <button type="button" title="Очистить заголовок"
-                            onClick={() => setValue("title", "")}>Очистить</button>
+                            <button
+                                type="button"
+                                title="Очистить заголовок"
+                                onClick={() => setValue("title", "")}
+                            >
+                                Очистить
+                            </button>
                             <h2>Изображение</h2>
                             <input
                                 type="text"
@@ -83,16 +92,26 @@ export const PostCreate = () => {
                                 {...register("image")}
                                 onBlur={(e) => setValue(e.target.value)}
                             />
-                            <button  type="button" title="Очистить изображение"
-                            onClick={() => setValue("image", "")}>Очистить</button>
+                            <button
+                                type="button"
+                                title="Очистить изображение"
+                                onClick={() => setValue("image", "")}
+                            >
+                                Очистить
+                            </button>
                             <h2>Текст статьи</h2>
                             <textarea
                                 placeholder="Напишите текст статьи"
                                 {...register("content")}
                                 onBlur={(e) => setValue(e.target.value)}
                             />
-                            <button  type="button" title="Очистить текст"
-                            onClick={() => setValue("content", "")}>Очистить</button>
+                            <button
+                                type="button"
+                                title="Очистить текст"
+                                onClick={() => setValue("content", "")}
+                            >
+                                Очистить
+                            </button>
                             <p>Вы подпишитесь как: {userLogin}</p>
                             {formError && <span>{formError}</span>}
                             <button type="submit" disabled={!!formError}>
@@ -133,7 +152,6 @@ const PostCreateContainer = styled.div`
             padding: 0 10px;
             outline: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-
         }
         button {
             background: yellow;
@@ -147,18 +165,8 @@ const PostCreateContainer = styled.div`
             border: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             &:hover {
-                animation: scale 1s infinite;
-                @keyframes scale {
-                    0% {
-                        transform: scale(1);
-                    }
-                    50% {
-                        transform: scale(1.1);
-                    }
-                    100% {
-                        transform: scale(1);
-                    }
-                }
+                animation: shake 0.5s;
+                animation-iteration-count: infinite;
             }
         }
         span {
