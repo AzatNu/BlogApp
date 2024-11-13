@@ -146,8 +146,6 @@ export const Users = () => {
     );
 };
 
-
-
 const UsersContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -155,7 +153,7 @@ const UsersContainer = styled.div`
     justify-content: center;
     align-items: center;
     border-radius: 20px;
-      margin: 120px 0 120px 0;
+    margin: 120px 0 120px 0;
     h1 {
         width: 100%;
         height: 50px;
@@ -213,23 +211,15 @@ const UsersContainer = styled.div`
             outline: none;
             border: none;
             text-align-last: center;
-            background-color: rgba(255, 255, 0, 0.8);
+            background-color: rgba(255, 0, 0, 0.7);
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
             > * button:hover {
                 background-color: rgba(255, 255, 0);
-                animation: scale 1s infinite;
-                @keyframes scale {
-                    0% {
-                        transform: scale(1);
-                    }
-                    50% {
-                        transform: scale(1.2);
-                    }
-                    100% {
-                        transform: scale(1);
-                    }
-                }
+      &:hover {
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+        }
             }
 `;

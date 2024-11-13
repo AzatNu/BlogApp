@@ -17,7 +17,7 @@ const createPostFormSchema = yup.object().shape({
     content: yup
         .string()
         .required(`*Текст статьи обязателен для заполнения`)
-        .min(200, `*Текст статьи должен содержать минимум 200 симbutton`)
+        .min(200, `*Текст статьи должен содержать минимум 200 сим`)
         .max(15000, `*Текст статьи должен содержать максимум 15000 символов`),
     image: yup
         .string()
@@ -208,7 +208,7 @@ const PostCreateContainer = styled.div`
     textarea {
         display: flex;
         width: 900px;
-        height: 600px;
+        height: 400px;
         margin: 20px 20px 20px 20px;
         border-radius: 10px;
         border: none;
@@ -217,6 +217,7 @@ const PostCreateContainer = styled.div`
         outline: none;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         background-image: linear-gradient(to top, #76da81, azure);
+        padding: 20px;
     }
 `;
 const PostCreatePage = styled.div`

@@ -28,7 +28,6 @@ export const PostId = () => {
     useEffect(() => {
         getPost(postId).then((data) => setPost(data));
     }, []);
-
     useEffect(() => {
         getComments(postId).then((data) => {
             setComments(data.filter((comment) => comment.post_id === postId));
@@ -45,7 +44,7 @@ export const PostId = () => {
                     <ConfirmationOfDeletion>
                         <h3>
                             Вы действительно хотите удалить публикацию:{" "}
-                            {post.title}? За авторством {post.author}
+                            {post.title}? За авторством:{" "}{post.author}
                             <br />
                             Это действие необратимо.
                         </h3>
@@ -75,7 +74,14 @@ export const PostId = () => {
                         <Header>
                             <img src={post.image_url} alt="post" />
                             <div>
-                                <h3>{post.title}</h3>
+                                <h3
+                                    style={{
+                                        maxWidth: "580px",
+                                        wordWrap: "break-word",
+                                    }}
+                                >
+                                    {post.title}
+                                </h3>
                                 <div>
                                     <p>
                                         <b>Дата публикации:</b>
@@ -86,8 +92,8 @@ export const PostId = () => {
                                         <b>Автор публикации:</b> <br />
                                         {post.author}
                                     </p>
-                                    {(roleId === ROLE.ADMIN ||
-                                        roleId === ROLE.MODERATOR)? (
+                                    {roleId === ROLE.ADMIN ||
+                                    roleId === ROLE.MODERATOR ? (
                                         <>
                                             {" "}
                                             <Link to={`/post/${postId}/edit`}>
@@ -112,15 +118,18 @@ export const PostId = () => {
                                                 }
                                             ></button>
                                         </>
-                                    ):(<span style={{ marginLeft: "92px" }
-                                    }></span>
-
-                                    )}
+                                    ) : null}
                                 </div>
                             </div>
                         </Header>
                         <Content>
-                            <p>{post.content}</p>
+                            <p
+                                style={{
+                                    overflowWrap: "break-word",
+                                }}
+                            >
+                                {post.content}
+                            </p>
                         </Content>
                         <Comments>
                             <h2>Комментарии к публикации:</h2>
@@ -285,6 +294,7 @@ const Comments = styled.div`
         }
     }
 `;
+
 const Content = styled.div`
     display: flex;
     flex-direction: column;
@@ -298,6 +308,7 @@ const Content = styled.div`
     border-radius: 10px;
     p {
         margin: 10px 20px 20px 20px;
+        max-width: 925px;
     }
 `;
 const Header = styled.div`
@@ -324,21 +335,18 @@ const Header = styled.div`
             height: 100px;
             margin: 0px 0px 5px 0px;
             font-size: 25px;
-            align-items: center;
-            display: flex;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             padding: 10px;
-            background-image: linear-gradient(to top, #76da81, azure);
             border-radius: 10px;
+            color: white;
+            word-wrap: break-word;
         }
         div {
             display: flex;
-            justify-content: space-between;
             flex-direction: row;
             margin: 0px 0px 0px 0px;
-            background-image: linear-gradient(to top, #76da81, azure);
             border-radius: 10px;
             padding: 10px;
+            color: white;
             button {
                 width: 50px;
                 height: 50px;
@@ -351,7 +359,6 @@ const Header = styled.div`
                 color: black;
                 justify-content: center;
                 align-items: center;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
                 border: none;
                 font-size: 20px;
                 &:hover {

@@ -5,7 +5,6 @@ export const useRequestDeleteComment = () => {
             const response = await fetch(`http://localhost:3005/comments/${id}`, {
                 method: "DELETE",
             });
-
         };
     }
     return { requestDeleteComment };

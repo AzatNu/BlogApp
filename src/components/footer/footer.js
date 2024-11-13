@@ -15,7 +15,7 @@ export const StyledFooter = styled(Footer)`
     display: flex;
     width: 1000px;
     height: 120px;
-    background-image: linear-gradient(to top, #76da81, azure);
+    background-image: linear-gradient(to top, rgba(118,218,129,0.9), rgba(255,255,255,1) );
     align-items: center;
     font-size: 15px;
     box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5);

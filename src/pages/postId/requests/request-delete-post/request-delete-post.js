@@ -12,7 +12,7 @@ export const useRequestDeletePost = () => {
                     type: "SET_DELETE_POST_BUTTON_CLICK",
                     deletePostButtonClick: false,
                 });
-                backNavigate("/post");
+                backNavigate("/");
             } else {
                 console.error("Ошибка удаления поста");
             }

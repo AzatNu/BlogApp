@@ -7,66 +7,131 @@ export const Post = () => {
     const [posts, setPosts] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [comments, setComments] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const postsPerPage = 10;
     useEffect(() => {
         getPosts().then((data) => setPosts(data));
     }, []);
     useEffect(() => {
         getComments().then((data) => setComments(data));
     }, []);
-
     const searchInPosts = () => {
         const filteredPosts = posts.filter((post) =>
             post.title.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setPosts(filteredPosts);
     };
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
     return (
-        <PostPage>
-            <h2>
-                <h1 className="fa fa-file-text"> Главная</h1>
-            </h2>
-            <SearchInPosts>
-                <input
-                    placeholder="Напишите заголовок статьи, которую хотите найти"
-                    value={searchQuery}
-                    onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                    }}
-                />
+        <>
+            <PostPage>
+                <h2>
+                    <h1 className="fa fa-file-text"> Главная</h1>
+                </h2>
+                <SearchInPosts>
+                    <input
+                        placeholder="Напишите заголовок статьи, которую хотите найти"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                        }}
+                    />
+                    <button
+                        className="fa fa-refresh"
+                        title="Сбросить поиск"
+                        onClick={() => {
+                            getPosts().then((data) => setPosts(data));
+                            setSearchQuery("");
+                        }}
+                    ></button>
+                    <button
+                        className="fa fa-search"
+                        title="Поиск"
+                        onClick={() => {
+                            searchInPosts();
+                        }}
+                    ></button>
+                </SearchInPosts>
+                <PostContainer>
+                    {currentPosts.map((post) => (
+                        <Link to={`/post/${post.id}`} key={post.id}>
+                            <div>
+                                <p>
+                                    {" "}
+                                    {post.published_at}
+                                    <p className="fa fa-comment">
+                                        {" "}
+                                        {
+                                            comments.filter(
+                                                (comment) =>
+                                                    comment.post_id === post.id
+                                            ).length
+                                        }
+                                    </p>
+                                </p>
+                                <img src={post.image_url} alt="post" />
+                                <h2>{post.title}</h2>
+                            </div>
+                        </Link>
+                    ))}
+                </PostContainer>
+                <h3>Странциа: {currentPage}</h3>
+            </PostPage>
+            <Pagination>
                 <button
-                    className="fa fa-refresh"
-                    title="Сбросить поиск"
-                    onClick={() => {
-                        getPosts().then((data) => setPosts(data));
-                        setSearchQuery("");
-                    }}
+                    title="Перейти в начало"
+                    className="fa fa-arrow-left"
+                    onClick={() => paginate(1)}
                 ></button>
+                {Array.from(
+                    { length: Math.ceil(posts.length / postsPerPage) },
+                    (_, i) => (
+                        <button key={i + 1} onClick={() => paginate(i + 1)}>
+                            {i + 1}
+                        </button>
+                    )
+                )}
                 <button
-                    className="fa fa-search"
-                    title="Поиск"
-                    onClick={() => {
-                        searchInPosts();
-                    }}
+                    title="Перейти в конец"
+                    className="fa fa-arrow-right"
+                    onClick={() =>
+                        paginate(Math.ceil(posts.length / postsPerPage))
+                    }
                 ></button>
-            </SearchInPosts>
-            <PostContainer>
-                {posts.map((post) => (
-                    <Link to={`/post/${post.id}`} key={post.id}>
-                        <div>
-                            <p>
-                                {" "}
-                                {post.published_at}
-                                <p className="fa fa-comment"> {comments.filter((comment) => comment.post_id === post.id).length}</p>
-                            </p>
-                            <img src={post.image_url} alt="post" />
-                            <h2>{post.title}</h2>
-                        </div>
-                    </Link>
-                ))}
-            </PostContainer>
-        </PostPage>
+            </Pagination>
+        </>
     );
 };
+const Pagination = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 0 10px 0;
+    button {
+        display: flex;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        outline: none;
+        border: none;
+        text-align-last: center;
+        background-image: linear-gradient(to top, #76da81, azure);
+        cursor: pointer;
+        color: black;
+        justify-content: center;
+        align-items: center;
+        font-size: 25px;
+        transition: all 0.5s ease;
+        margin: 0 5px 120px 5px;
+        &:hover {
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+        }
+    }
+`;
 const SearchInPosts = styled.div`
     height: 70px;
     display: flex;
@@ -100,7 +165,7 @@ const SearchInPosts = styled.div`
         font-size: 25px;
         transition: all 0.5s ease;
         margin: 0 5px 0 5px;
-      &:hover {
+        &:hover {
             animation: shake 0.5s;
             animation-iteration-count: 1;
         }
@@ -170,7 +235,7 @@ const PostPage = styled.div`
     color: white;
     justify-content: center;
     align-items: center;
-    margin: 120px 0 120px 0;
+    margin: 120px 0 20px 0;
     width: 100%;
     height: 100%;
     border-radius: 20px;
@@ -185,7 +250,11 @@ const PostPage = styled.div`
         border-radius: 20px;
     }
     h2 {
+        max-width: 300px;
         font-size: 30px;
         margin: 0;
+        text-align: center;
+        word-wrap: break-word;
+        padding: 10px;
     }
 `;

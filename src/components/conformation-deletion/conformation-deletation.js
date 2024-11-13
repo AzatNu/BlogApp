@@ -9,13 +9,16 @@ export const ConfirmationOfDeletion = styled.div`
     flex-direction: column;
     align-items: center;
     h3 {
+        width: 800px;
         color: black;
         font-size: 25px;
         border-radius: 10px;
         padding: 40px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         background-image: linear-gradient(to top, #76da81, azure);
-    }
+        text-align: center;
+        line-height: 1.5;
+        word-wrap: break-word;    }
     button {
         background: yellow;
         width: 200px;
