@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { getPost } from "../../bff/api";
 import { useParams } from "react-router-dom";
 import { useRequestUpdatePostId } from "./request-update-post-id";
+import PropTypes from "prop-types";
 
 const editPostFormSchema = yup.object().shape({
     title: yup
@@ -20,7 +21,7 @@ const editPostFormSchema = yup.object().shape({
     content: yup
         .string()
         .required(`*Текст статьи обязателен для заполнения`)
-        .min(200, `*Текст статьи должен содержать минимум 200 симbutton`)
+        .min(200, `*Текст статьи должен содержать минимум 200 символов`)
         .max(15000, `*Текст статьи должен содержать максимум 15000 символов`),
     image: yup
         .string()
@@ -41,7 +42,7 @@ export const PostEdit = () => {
             setValue("content", data.content);
             setValue("image", data.image_url);
         });
-    }, [postId]);
+    }, [postId, setValue]);
 
     const dispatch = useDispatch();
     const userRole = useSelector(selectUserRole);
@@ -80,7 +81,7 @@ export const PostEdit = () => {
         <PostEditPage>
             {userRole !== ROLE.MODERATOR && userRole !== ROLE.ADMIN ? (
                 <ErrorAccess>
-                    У вас нет прав для просмотра этой страницы
+                    Ошибка 403. У вас нет прав для просмотра этой страницы
                 </ErrorAccess>
             ) : (
                 <>
@@ -159,7 +160,7 @@ const PostEditContainer = styled.div`
         line-height: 1.5;
         input {
             display: flex;
-            width: 500px;
+            width: 900px;
             height: 50px;
             margin: 20px 20px 20px 20px;
             border-radius: 10px;
@@ -224,7 +225,7 @@ const PostEditContainer = styled.div`
     textarea {
         display: flex;
         width: 900px;
-        height: 600px;
+        height: 400px;
         margin: 20px 20px 20px 20px;
         border-radius: 10px;
         border: none;
@@ -249,3 +250,7 @@ const PostEditPage = styled.div`
         font-size: 30px;
     }
 `;
+PostEdit.propTypes = {
+    postId: PropTypes.string,
+    userLogin: PropTypes.string,
+};

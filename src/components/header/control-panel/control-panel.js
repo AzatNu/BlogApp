@@ -18,9 +18,8 @@ export const StyledControlPanel = ({ clasName }) => {
     const onLogout = () => {
         dispatch(logout(session));
         sessionStorage.removeItem("userData");
-    }
+    };
     return (
-
         <ControlPanel className={clasName}>
             <StyledUserLogin title={`Вы авторизовались как ${login}`}>
                 {login}
@@ -82,7 +81,7 @@ const ControlPanel = styled.div`
     font-size: 15px;
     justify-content: flex-end;
     > a {
-           text-decoration: none;
+        text-decoration: none;
     }
 `;
 
@@ -103,10 +102,8 @@ const ControlPanelButton = styled.button`
     font-size: 20px;
     margin-right: 10px;
       &:hover {
-      &:hover {
             animation: shake 0.5s;
             animation-iteration-count: 1;
-        }
         }
     }
 `;

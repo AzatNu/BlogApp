@@ -7,7 +7,8 @@ import {
     Post,
     PostId,
     PostCreate,
-    PostEdit
+    PostEdit,
+    Error
 } from "./pages/index";
 import { useDispatch } from "react-redux";
 import { setUser } from "./bff/actions";
@@ -50,7 +51,7 @@ export const Blog = () => {
                 <Route path="/post/:postId" element={<PostId />} />
                 <Route path="/postCreate" element={<PostCreate />}/>
                 <Route path="/post/:postId/edit" element={<PostEdit />} />
-                    <Route path="*" element={<div>Ошибка</div>} />
+                    <Route path="*" element={<Error />} />
             </Routes>
             <StyledFooter />
         </AppColumn>

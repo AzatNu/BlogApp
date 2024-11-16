@@ -18,7 +18,8 @@ export const ConfirmationOfDeletion = styled.div`
         background-image: linear-gradient(to top, #76da81, azure);
         text-align: center;
         line-height: 1.5;
-        word-wrap: break-word;    }
+        word-wrap: break-word;
+    }
     button {
         background: yellow;
         width: 200px;

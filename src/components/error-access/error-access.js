@@ -3,6 +3,8 @@ export  const ErrorAccess = styled.div`
 display: flex;
 position: fixed;
 top: 45%;
+right: 0;
+left: 0;
 height: 100px;
 align-items: center;
 justify-content: center;

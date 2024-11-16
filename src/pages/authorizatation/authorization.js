@@ -11,6 +11,7 @@ import {
     AuthorizationBackground,
     StyledAuthorization,
 } from "../../components/styeld-modal-overlay";
+import PropTypes from "prop-types";
 const authFormSchema = yup.object().shape({
     login: yup
         .string()
@@ -103,4 +104,14 @@ export const Authorization = () => {
             </StyledAuthorization>
         </AuthorizationBackground>
     );
+};
+
+Authorization.propTypes = {
+    navigate: PropTypes.func,
+    dispatch: PropTypes.func,
+    reset: PropTypes.func,
+    handleSubmit: PropTypes.func,
+    formState: PropTypes.func,
+    register: PropTypes.func,
+    errors: PropTypes.func,
 };

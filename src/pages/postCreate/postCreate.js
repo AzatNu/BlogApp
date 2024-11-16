@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRequestCreatePost } from "./request-create-post";
+import PropTypes from "prop-types";
 
 const createPostFormSchema = yup.object().shape({
     title: yup
@@ -17,7 +18,7 @@ const createPostFormSchema = yup.object().shape({
     content: yup
         .string()
         .required(`*Текст статьи обязателен для заполнения`)
-        .min(200, `*Текст статьи должен содержать минимум 200 сим`)
+        .min(200, `*Текст статьи должен содержать минимум 200 символов`)
         .max(15000, `*Текст статьи должен содержать максимум 15000 символов`),
     image: yup
         .string()
@@ -64,7 +65,7 @@ export const PostCreate = () => {
         <PostCreatePage>
             {userRole !== ROLE.MODERATOR && userRole !== ROLE.ADMIN ? (
                 <ErrorAccess>
-                    У вас нет прав для просмотра этой страницы
+                    Ошибка 403. У вас нет прав для просмотра этой страницы
                 </ErrorAccess>
             ) : (
                 <>
@@ -143,7 +144,7 @@ const PostCreateContainer = styled.div`
         line-height: 1.5;
         input {
             display: flex;
-            width: 500px;
+            width: 900px;
             height: 50px;
             margin: 20px 20px 20px 20px;
             border-radius: 10px;
@@ -234,3 +235,14 @@ const PostCreatePage = styled.div`
         font-size: 30px;
     }
 `;
+
+PostCreate.propTypes = {
+    onSubmit: PropTypes.func,
+    register: PropTypes.func,
+    errors: PropTypes.func,
+    formState: PropTypes.func,
+    navigate: PropTypes.func,
+    reset: PropTypes.func,
+    userLogin: PropTypes.string,
+    formError: PropTypes.string,
+};

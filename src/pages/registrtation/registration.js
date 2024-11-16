@@ -10,6 +10,7 @@ import {
     AuthorizationBackground,
     StyledAuthorization,
 } from "../../components/styeld-modal-overlay";
+import PropTypes from "prop-types";
 
 const regFormSchema = yup.object().shape({
     login: yup
@@ -111,4 +112,10 @@ export const Registration = () => {
             </StyledAuthorization>
         </AuthorizationBackground>
     );
+};
+
+Registration.propTypes = {
+    login: PropTypes.string,
+    password: PropTypes.string,
+    passwordRepeat: PropTypes.string,
 };

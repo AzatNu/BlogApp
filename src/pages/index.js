@@ -5,3 +5,4 @@ export * from "./post/post";
 export * from "./postId/postId";
 export * from "./postCreate/postCreate"
 export * from "./postEdit/postEdit";
+export * from "./error/error"

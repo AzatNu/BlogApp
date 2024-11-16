@@ -8,13 +8,15 @@ import {
 import { Link, useParams } from "react-router-dom";
 import { getPost, getComments } from "../../bff/api";
 import { useEffect, useState } from "react";
-import { ConfirmationOfDeletion } from "../../components";
+import { ConfirmationOfDeletion, ErrorAccess } from "../../components";
 import { ROLE } from "../../const";
 import {
     useRequestDeletePost,
     useRequestDeleteComment,
     useRequestCreateComment,
+    useRequestDeleteAllPostComments,
 } from "./requests";
+import PropTypes from "prop-types";
 
 export const PostId = () => {
     const dispatch = useDispatch();
@@ -30,13 +32,15 @@ export const PostId = () => {
     }, []);
     useEffect(() => {
         getComments(postId).then((data) => {
-            setComments(data.filter((comment) => comment.post_id === postId));
+            setComments(
+                data.filter((comment) => comment.post_id === postId).reverse()
+            );
         });
     }, [comment, comments, postId]);
     const { requestDeletePost } = useRequestDeletePost();
     const { requestDeleteComment } = useRequestDeleteComment();
     const { requestCreateComment } = useRequestCreateComment();
-
+    const { requestDeleteAllPostComments } = useRequestDeleteAllPostComments();
     return (
         <PostIdPage>
             <PostIdContainer>
@@ -44,7 +48,7 @@ export const PostId = () => {
                     <ConfirmationOfDeletion>
                         <h3>
                             Вы действительно хотите удалить публикацию:{" "}
-                            {post.title}? За авторством:{" "}{post.author}
+                            {post.title}? За авторством: {post.author}
                             <br />
                             Это действие необратимо.
                         </h3>
@@ -54,6 +58,9 @@ export const PostId = () => {
                                 title="согласен"
                                 onClick={() => {
                                     dispatch(requestDeletePost(postId));
+                                    dispatch(
+                                        requestDeleteAllPostComments(postId)
+                                    );
                                 }}
                             ></button>
                             <button
@@ -71,134 +78,163 @@ export const PostId = () => {
                     </ConfirmationOfDeletion>
                 ) : (
                     <>
-                        <Header>
-                            <img src={post.image_url} alt="post" />
-                            <div>
-                                <h3
-                                    style={{
-                                        maxWidth: "580px",
-                                        wordWrap: "break-word",
-                                    }}
-                                >
-                                    {post.title}
-                                </h3>
-                                <div>
-                                    <p>
-                                        <b>Дата публикации:</b>
-                                        <br />
-                                        {post.published_at}
-                                    </p>
-                                    <p style={{ marginLeft: "20px" }}>
-                                        <b>Автор публикации:</b> <br />
-                                        {post.author}
-                                    </p>
-                                    {roleId === ROLE.ADMIN ||
-                                    roleId === ROLE.MODERATOR ? (
-                                        <>
-                                            {" "}
-                                            <Link to={`/post/${postId}/edit`}>
-                                                <button
-                                                    style={{
-                                                        marginLeft: "81px",
-                                                    }}
-                                                    className="fa fa-pencil"
-                                                    title="Редактировать публикацию"
-                                                ></button>
-                                            </Link>
-                                            <button
-                                                style={{ marginLeft: "11px" }}
-                                                className="fa fa-trash"
-                                                title="Удалить публикацию"
-                                                onClick={() =>
-                                                    dispatch({
-                                                        type: "SET_DELETE_POST_BUTTON_CLICK",
-                                                        deletePostButtonClick:
-                                                            !deletePostButtonClick,
-                                                    })
-                                                }
-                                            ></button>
-                                        </>
-                                    ) : null}
-                                </div>
-                            </div>
-                        </Header>
-                        <Content>
-                            <p
-                                style={{
-                                    overflowWrap: "break-word",
-                                }}
-                            >
-                                {post.content}
-                            </p>
-                        </Content>
-                        <Comments>
-                            <h2>Комментарии к публикации:</h2>
-                            {comments.length === 0 ? (
-                                <h2>
-                                    Комментарии к данной публикации отсутствуют
-                                </h2>
-                            ) : (
-                                comments.map((comment, index) => (
-                                    <div key={index}>
-                                        <h2>{comment.author}</h2>
-                                        <span>{comment.published_at}</span>
-                                        <p>{comment.content}</p>
-                                        {roleId === ROLE.ADMIN ||
-                                        roleId === ROLE.MODERATOR ? (
-                                            <button
-                                                title="Удалить комментарий"
-                                                className="fa fa-trash"
-                                                onClick={() =>
-                                                    dispatch(
-                                                        requestDeleteComment(
-                                                            comment.id
-                                                        )
-                                                    )
-                                                }
-                                            ></button>
-                                        ) : null}
-                                    </div>
-                                ))
-                            )}
-                            <div>
-                                {roleId === ROLE.GUEST ? (
-                                    <p>
-                                        Авторизируйтесь, чтобы иметь возможность
-                                        оставлять свои комментарии к публикациям
-                                    </p>
-                                ) : (
+                        {post.length === 0 ? (
+                            <ErrorAccess>
+                                Ошибка 404. Указанная вами публикация не найдена
+                            </ErrorAccess>
+                        ) : (
+                            <>
+                                <Header>
+                                    <img src={post.image_url} alt="post" />
                                     <div>
-                                        <textarea
-                                            value={comment}
-                                            placeholder="Ваш комментарий"
-                                            onChange={(e) =>
-                                                setComment(e.target.value)
-                                            }
-                                        />
+                                        <h3
+                                            style={{
+                                                maxWidth: "580px",
+                                                wordWrap: "break-word",
+                                            }}
+                                        >
+                                            {post.title}
+                                        </h3>
+                                        <div>
+                                            <p>
+                                                <b>Дата публикации:</b>
+                                                <br />
+                                                {post.published_at}
+                                            </p>
+                                            <p style={{ marginLeft: "20px" }}>
+                                                <b>Автор публикации:</b> <br />
+                                                {post.author}
+                                            </p>
+                                            {roleId === ROLE.ADMIN ||
+                                            roleId === ROLE.MODERATOR ? (
+                                                <>
+                                                    {" "}
+                                                    <Link
+                                                        to={`/post/${postId}/edit`}
+                                                    >
+                                                        <button
+                                                            style={{
+                                                                marginLeft:
+                                                                    "40px",
+                                                            }}
+                                                            className="fa fa-pencil"
+                                                            title="Редактировать публикацию"
+                                                        ></button>
+                                                    </Link>
+                                                    <button
+                                                        style={{
+                                                            marginLeft: "11px",
+                                                        }}
+                                                        className="fa fa-trash"
+                                                        title="Удалить публикацию"
+                                                        onClick={() =>
+                                                            dispatch({
+                                                                type: "SET_DELETE_POST_BUTTON_CLICK",
+                                                                deletePostButtonClick:
+                                                                    !deletePostButtonClick,
+                                                            })
+                                                        }
+                                                    ></button>
+                                                </>
+                                            ) : null}
+                                        </div>
                                     </div>
-                                )}
-                                {roleId === ROLE.GUEST ? null : (
-                                    <button
-                                        title="Отправить комментарий"
-                                        className="fa fa-send"
-                                        disabled={
-                                            roleId === ROLE.GUEST ||
-                                            comment.length === 0
-                                        }
-                                        onClick={() => {
-                                            dispatch(
-                                                requestCreateComment(
-                                                    comment,
-                                                    postId,
-                                                    userLogin
-                                                )
-                                            );
-                                            setComment("");
+                                </Header>
+                                <Content>
+                                    <p
+                                        style={{
+                                            overflowWrap: "break-word",
                                         }}
-                                    ></button>
-                                )}
-                            </div>
-                        </Comments>
+                                    >
+                                        {post.content}
+                                    </p>
+                                </Content>
+                                <Comments>
+                                    <h2>Комментарии к публикации:</h2>
+                                    <div>
+                                        {roleId === ROLE.GUEST ? (
+                                            <p>
+                                                Авторизируйтесь, чтобы иметь
+                                                возможность оставлять свои
+                                                комментарии к публикациям
+                                            </p>
+                                        ) : (
+                                            <div>
+                                                <textarea
+                                                    value={comment}
+                                                    placeholder="Ваш комментарий..."
+                                                    onChange={(e) =>
+                                                        setComment(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                                <span
+                                                    style={{
+                                                        fontSize: "15px",
+                                                        color: "#999",
+                                                    }}
+                                                >
+                                                    {comment.length} / 400
+                                                    символов
+                                                </span>
+                                            </div>
+                                        )}
+                                        {roleId === ROLE.GUEST ? null : (
+                                            <button
+                                                title="Отправить комментарий"
+                                                className="fa fa-send"
+                                                disabled={
+                                                    roleId === ROLE.GUEST ||
+                                                    comment.length === 0 ||
+                                                    comment.length > 400
+                                                }
+                                                onClick={() => {
+                                                    dispatch(
+                                                        requestCreateComment(
+                                                            comment,
+                                                            postId,
+                                                            userLogin
+                                                        )
+                                                    );
+                                                    setComment("");
+                                                }}
+                                            ></button>
+                                        )}
+                                    </div>
+                                    {comments.length === 0 ? (
+                                        <h2>
+                                            Комментарии к данной публикации
+                                            отсутствуют
+                                        </h2>
+                                    ) : (
+                                        comments.map((comment, index) => (
+                                            <div key={index}>
+                                                <h2>{comment.author}</h2>
+                                                <span>
+                                                    {comment.published_at}
+                                                </span>
+                                                <p>{comment.content}</p>
+                                                {roleId === ROLE.ADMIN ||
+                                                roleId === ROLE.MODERATOR ? (
+                                                    <button
+                                                        title="Удалить комментарий"
+                                                        className="fa fa-trash"
+                                                        onClick={() =>
+                                                            dispatch(
+                                                                requestDeleteComment(
+                                                                    comment.id
+                                                                )
+                                                            )
+                                                        }
+                                                    ></button>
+                                                ) : null}
+                                            </div>
+                                        ))
+                                    )}
+                                </Comments>
+                            </>
+                        )}
                     </>
                 )}
             </PostIdContainer>
@@ -229,16 +265,19 @@ const Comments = styled.div`
         border-radius: 10px;
         padding: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        word-wrap: break-word;
+        max-width: 900px;
     }
     h2 {
-        width: 100%;
-        margin: 10px 20px 0px 25px;
+        margin: 0px 0px 10px 25px;
         font-size: 25px;
+        word-wrap: break-word;
+        max-width: 900px;
     }
     textarea {
-        width: 900px;
+        width: 880px;
         height: 100px;
-        margin: 20px 20px 0px 20px;
+        margin: 10px 20px 0px 20px;
         border-radius: 10px;
         border: none;
         background-image: linear-gradient(to top, #76da81, azure);
@@ -246,6 +285,7 @@ const Comments = styled.div`
         padding: 10px;
         font-size: 20px;
         outline: none;
+        resize: none;
     }
     div {
         button {
@@ -385,5 +425,12 @@ const PostIdPage = styled.div`
     color: white;
     justify-content: center;
     align-items: center;
-    margin: 120px 20px 120px 20px;
+    margin: 120px 10px 120px 10px;
 `;
+PostIdPage.propTypes = {
+    id: PropTypes.string,
+    title: PropTypes.string,
+    content: PropTypes.string,
+    urlImg: PropTypes.string,
+    userLogin: PropTypes.string,
+};

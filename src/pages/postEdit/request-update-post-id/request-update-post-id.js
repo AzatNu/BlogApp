@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 export const useRequestUpdatePostId = () => {
     const backNavigate = useNavigate();
     const requestUpdatePostId = (id, title, content, urlImg, userLogin) => {
@@ -21,4 +22,12 @@ export const useRequestUpdatePostId = () => {
         };
     };
     return { requestUpdatePostId };
+};
+
+useRequestUpdatePostId.propTypes = {
+    id: PropTypes.string,
+    title: PropTypes.string,
+    content: PropTypes.string,
+    urlImg: PropTypes.string,
+    userLogin: PropTypes.string,
 };

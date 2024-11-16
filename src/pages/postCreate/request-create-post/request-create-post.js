@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 export const useRequestCreatePost = () => {
     const backNavigate = useNavigate();
@@ -24,5 +25,12 @@ export const useRequestCreatePost = () => {
         };
     };
     return { requestCreatePost };
+};
+
+useRequestCreatePost.propTypes = {
+    title: PropTypes.string,
+    content: PropTypes.string,
+    urlImg: PropTypes.string,
+    userLogin: PropTypes.string,
 };
 

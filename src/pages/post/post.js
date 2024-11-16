@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { getComments, getPosts } from "../../bff/api";
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
 export const Post = () => {
     const [posts, setPosts] = useState([]);
@@ -28,9 +29,7 @@ export const Post = () => {
     return (
         <>
             <PostPage>
-                <h2>
-                    <h1 className="fa fa-file-text"> Главная</h1>
-                </h2>
+                <h2 className="fa fa-file-text"> Главная</h2>
                 <SearchInPosts>
                     <input
                         placeholder="Напишите заголовок статьи, которую хотите найти"
@@ -59,21 +58,27 @@ export const Post = () => {
                     {currentPosts.map((post) => (
                         <Link to={`/post/${post.id}`} key={post.id}>
                             <div>
-                                <p>
-                                    {" "}
-                                    {post.published_at}
-                                    <p className="fa fa-comment">
-                                        {" "}
-                                        {
-                                            comments.filter(
-                                                (comment) =>
-                                                    comment.post_id === post.id
-                                            ).length
-                                        }
-                                    </p>
+                                <p className="fa fa-comment">
+                                    {
+                                        comments.filter(
+                                            (comment) =>
+                                                comment.post_id === post.id
+                                        ).length
+                                    }
                                 </p>
                                 <img src={post.image_url} alt="post" />
-                                <h2>{post.title}</h2>
+                                <h2>
+                                    {post.title} (
+                                    {new Date(post.published_at).toLocaleString(
+                                        "ru",
+                                        {
+                                            year: "2-digit",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                        }
+                                    )}
+                                    )
+                                </h2>
                             </div>
                         </Link>
                     ))}
@@ -183,7 +188,7 @@ const PostContainer = styled.div`
         text-decoration: none;
     }
     div {
-        height: 350px;
+        height: 450px;
         background-image: linear-gradient(to top, #76da81, azure);
         border-radius: 10px;
         text-align: center;
@@ -199,22 +204,17 @@ const PostContainer = styled.div`
             font-size: 15px;
         }
         p {
+            background-image: linear-gradient(to top, #76da81, azure);
+            height: 20px;
             margin: 0px 0px 0px 0px;
             padding: 5px;
             color: black;
             font-size: 15px;
-            background-image: linear-gradient(to top, #76da81, azure);
             display: flex;
             border-radius: 10px 10px 0 0px;
             align-items: center;
             flex-direction: row;
             justify-content: space-between;
-            i {
-                width: 100%;
-                color: black;
-                font-size: 15px;
-                margin: 0;
-            }
         }
     }
     > *:hover {
@@ -235,7 +235,7 @@ const PostPage = styled.div`
     color: white;
     justify-content: center;
     align-items: center;
-    margin: 120px 0 20px 0;
+    margin: 130px 0 20px 0;
     width: 100%;
     height: 100%;
     border-radius: 20px;
@@ -252,9 +252,19 @@ const PostPage = styled.div`
     h2 {
         max-width: 300px;
         font-size: 30px;
-        margin: 0;
+        margin: 20px;
         text-align: center;
         word-wrap: break-word;
-        padding: 10px;
     }
 `;
+
+PostPage.propTypes = {
+    posts: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            title: PropTypes.string.isRequired,
+            body: PropTypes.string.isRequired,
+            image: PropTypes.string.isRequired,
+        })
+    ),
+};
