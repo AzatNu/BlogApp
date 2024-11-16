@@ -68,16 +68,8 @@ export const Post = () => {
                                 </p>
                                 <img src={post.image_url} alt="post" />
                                 <h2>
-                                    {post.title} (
-                                    {new Date(post.published_at).toLocaleString(
-                                        "ru",
-                                        {
-                                            year: "2-digit",
-                                            month: "2-digit",
-                                            day: "2-digit",
-                                        }
-                                    )}
-                                    )
+                                    {post.title}
+                                    <br /> ({post.published_at})
                                 </h2>
                             </div>
                         </Link>
