@@ -244,7 +244,7 @@ const PostPage = styled.div`
     h2 {
         max-width: 300px;
         font-size: 30px;
-        margin: 20px;
+              margin: 10px;
         text-align: center;
         word-wrap: break-word;
     }
