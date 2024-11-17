@@ -78,7 +78,7 @@ export const PostId = () => {
                     </ConfirmationOfDeletion>
                 ) : (
                     <>
-                        {post.length === 0 ? (
+                        {post.id === undefined ? (
                             <ErrorAccess>
                                 Ошибка 404. Указанная вами публикация не найдена
                             </ErrorAccess>
