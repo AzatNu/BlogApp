@@ -1,20 +1,16 @@
 import { useSelector } from "react-redux";
-import { selectUpdateUserList } from "../../../selectors/index";
+import { selectUpdateUserList} from "../../../selectors/index";
+import { request } from "../../utils/request";
 
 export const useRequestChangeUserRole = () => {
     const updateUsersList = useSelector(selectUpdateUserList);
     const changeUserRole = (id, newRole) => {
         return async (dispatch) => {
-            const response = await fetch(`http://localhost:3005/users/${id}`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                    role_id: newRole,
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                },
+            const response = await request(`/users/${id}`, "PATCH", {
+                role_id: newRole
             });
-            if (response.ok) {
+
+            if (response) {
                 dispatch({
                     type: "SET_UPDATE_USER_LIST",
                     updateUsersList: !updateUsersList,

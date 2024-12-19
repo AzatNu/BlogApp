@@ -3,44 +3,39 @@ import { useSelector, useDispatch } from "react-redux";
 import {
     selectUserRole,
     selectDeletePostButtonClick,
-    selectUserLogin,
+    selectPostById,
+    selectIsLoading,
+    selectRefreshPost,
+    selectCreateButtonClicked
 } from "../../selectors";
 import { Link, useParams } from "react-router-dom";
-import { getPost, getComments } from "../../bff/api";
+import { getPost } from "../../bff/api";
 import { useEffect, useState } from "react";
-import { ConfirmationOfDeletion, ErrorAccess } from "../../components";
+import { ConfirmationOfDeletion, ErrorAccess, Loader } from "../../components";
 import { ROLE } from "../../const";
 import {
     useRequestDeletePost,
-    useRequestDeleteComment,
     useRequestCreateComment,
-    useRequestDeleteAllPostComments,
+    useRequestDeleteComment
 } from "./requests";
 import PropTypes from "prop-types";
 
 export const PostId = () => {
     const dispatch = useDispatch();
     const { postId } = useParams();
-    const [post, setPost] = useState([]);
-    const [comments, setComments] = useState([]);
     const [comment, setComment] = useState("");
     const roleId = useSelector(selectUserRole);
     const deletePostButtonClick = useSelector(selectDeletePostButtonClick);
-    const userLogin = useSelector(selectUserLogin);
+    const post = useSelector(selectPostById);
+    const isLoading = useSelector(selectIsLoading);
+    const refreshPost = useSelector(selectRefreshPost);
+    const createButtonClicked = useSelector(selectCreateButtonClicked);
     useEffect(() => {
-        getPost(postId).then((data) => setPost(data));
-    }, []);
-    useEffect(() => {
-        getComments(postId).then((data) => {
-            setComments(
-                data.filter((comment) => comment.post_id === postId).reverse()
-            );
-        });
-    }, [comment, comments, postId]);
+        dispatch(getPost(postId))
+    }, [!refreshPost]);
     const { requestDeletePost } = useRequestDeletePost();
-    const { requestDeleteComment } = useRequestDeleteComment();
     const { requestCreateComment } = useRequestCreateComment();
-    const { requestDeleteAllPostComments } = useRequestDeleteAllPostComments();
+    const { requestDeleteComment } = useRequestDeleteComment();
     return (
         <PostIdPage>
             <PostIdContainer>
@@ -58,9 +53,6 @@ export const PostId = () => {
                                 title="согласен"
                                 onClick={() => {
                                     dispatch(requestDeletePost(postId));
-                                    dispatch(
-                                        requestDeleteAllPostComments(postId)
-                                    );
                                 }}
                             ></button>
                             <button
@@ -78,13 +70,13 @@ export const PostId = () => {
                     </ConfirmationOfDeletion>
                 ) : (
                     <>
-                        {post.id === undefined ? (
+                        {post?.id === undefined ? (
                             <ErrorAccess>
                                 Ошибка 404. Указанная вами публикация не найдена
                             </ErrorAccess>
                         ) : (
                             <>
-                                <Header>
+                                {isLoading ? (<Loader />) : (<Header>
                                     <img src={post.image_url} alt="post" />
                                     <div>
                                         <h3
@@ -99,16 +91,15 @@ export const PostId = () => {
                                             <p>
                                                 <b>Дата публикации:</b>
                                                 <br />
-                                                {post.published_at}
+                                                {new Date(post.published_at).toLocaleDateString("ru-RU")}
                                             </p>
                                             <p style={{ marginLeft: "20px" }}>
                                                 <b>Автор публикации:</b> <br />
                                                 {post.author}
                                             </p>
                                             {roleId === ROLE.ADMIN ||
-                                            roleId === ROLE.MODERATOR ? (
+                                                roleId === ROLE.MODERATOR ? (
                                                 <>
-                                                    {" "}
                                                     <Link
                                                         to={`/post/${postId}/edit`}
                                                     >
@@ -139,8 +130,8 @@ export const PostId = () => {
                                             ) : null}
                                         </div>
                                     </div>
-                                </Header>
-                                <Content>
+                                </Header>)}
+                                {isLoading ? (<Loader />) : (<Content>
                                     <p
                                         style={{
                                             overflowWrap: "break-word",
@@ -148,8 +139,8 @@ export const PostId = () => {
                                     >
                                         {post.content}
                                     </p>
-                                </Content>
-                                <Comments>
+                                </Content>)}
+                                {isLoading ? (<Loader />) : (<Comments>
                                     <h2>Комментарии к публикации:</h2>
                                     <div>
                                         {roleId === ROLE.GUEST ? (
@@ -187,52 +178,48 @@ export const PostId = () => {
                                                 disabled={
                                                     roleId === ROLE.GUEST ||
                                                     comment.length === 0 ||
-                                                    comment.length > 400
+                                                    comment.length > 400 ||
+                                                    createButtonClicked
                                                 }
                                                 onClick={() => {
                                                     dispatch(
                                                         requestCreateComment(
                                                             comment,
-                                                            postId,
-                                                            userLogin
+                                                            postId
                                                         )
                                                     );
-                                                    setComment("");
                                                 }}
                                             ></button>
                                         )}
                                     </div>
-                                    {comments.length === 0 ? (
+                                    {post.comments?.length === 0 ? (
                                         <h2>
                                             Комментарии к данной публикации
                                             отсутствуют
                                         </h2>
                                     ) : (
-                                        comments.map((comment, index) => (
+                                        post.comments?.map((comment, index) => (
                                             <div key={index}>
-                                                <h2>{comment.author}</h2>
+                                                <h2>{comment.author.login}</h2>
                                                 <span>
-                                                    {comment.published_at}
+                                                    {new Date(comment.published_at).toLocaleString("ru")}
                                                 </span>
                                                 <p>{comment.content}</p>
                                                 {roleId === ROLE.ADMIN ||
-                                                roleId === ROLE.MODERATOR ? (
+                                                    roleId === ROLE.MODERATOR ? (
                                                     <button
                                                         title="Удалить комментарий"
                                                         className="fa fa-trash"
-                                                        onClick={() =>
-                                                            dispatch(
-                                                                requestDeleteComment(
-                                                                    comment.id
-                                                                )
-                                                            )
+                                                        onClick={() => {
+                                                            dispatch(requestDeleteComment(postId, comment.id));
+                                                        }
                                                         }
                                                     ></button>
                                                 ) : null}
                                             </div>
                                         ))
                                     )}
-                                </Comments>
+                                </Comments>)}
                             </>
                         )}
                     </>
@@ -241,6 +228,8 @@ export const PostId = () => {
         </PostIdPage>
     );
 };
+
+
 const Comments = styled.div`
     display: flex;
     flex-direction: column;

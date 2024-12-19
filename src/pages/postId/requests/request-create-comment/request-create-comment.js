@@ -1,22 +1,25 @@
-
+import { request } from "../../../utils/request";
+import { selectRefreshPost } from "../../../../selectors";
+import { useDispatch, useSelector } from "react-redux"
 export const useRequestCreateComment = () => {
-    const date = new Date().toLocaleString("ru");
+const refreshPost = useSelector(selectRefreshPost);
 
-    const requestCreateComment = (content, postId, userLogin) => {
+const dispatch = useDispatch();
+    const requestCreateComment = (content, postId) => {
+        dispatch({type:"SET_CREATE_COMMENT_BUTTON_CLICKED",
+            createButtonClicked: true
+        })
         return async (dispatch) => {
-            const response = await fetch("http://localhost:3005/comments", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    content: content,
-                    post_id: postId,
-                    author: userLogin,
-                    published_at: date,
-                }),
-            });
-
+            await request(`/posts/${postId}/comments`, "POST", {
+                content,
+            })
+            dispatch({
+                type: "SET_REFRESH_POST",
+                refreshPost: !refreshPost
+            })
+            dispatch({type:"SET_CREATE_COMMENT_BUTTON_CLICKED",
+                createButtonClicked: false
+            })
         }
     }
 

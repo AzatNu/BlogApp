@@ -49,14 +49,13 @@ export const PostCreate = () => {
     const { requestCreatePost } = useRequestCreatePost();
     const onSubmit = (register) => {
         dispatch(
-            requestCreatePost(
-                register.title,
-                register.content,
-                register.image,
-                userLogin
-            )
-        );
-    };
+            requestCreatePost({
+                title: register.title,
+                content: register.content,
+                image_url: register.image,
+                author: userLogin
+            })
+        )}
     const formError =
         errors?.title?.message ||
         errors?.content?.message ||

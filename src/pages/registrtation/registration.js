@@ -1,16 +1,15 @@
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { server } from "../../bff/server";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setUser } from "../../bff/actions/index";
 import { useDispatch, useStore } from "react-redux";
 import {
     AuthorizationBackground,
     StyledAuthorization,
 } from "../../components/styeld-modal-overlay";
-import PropTypes from "prop-types";
+
+import {request} from "../utils/request"
 
 const regFormSchema = yup.object().shape({
     login: yup
@@ -48,13 +47,12 @@ export const Registration = () => {
     });
     const [serverError, setServerError] = useState(null);
     const onSubmit = ({ login, password }) => {
-        server.registred(login, password).then(({ error, res }) => {
+        request("/register","POST" , { login, password}).then(({ error, user }) => {
             if (error) {
                 setServerError(`${error}`);
                 return;
             }
-            dispatch(setUser(res));
-            sessionStorage.setItem("userData", JSON.stringify(res));
+            dispatch({type:"SET_USER", id:user.id, login:user.login, role:user.role, registrate_at:user.registrate_at});
             navigate("/");
         });
     };
@@ -112,10 +110,4 @@ export const Registration = () => {
             </StyledAuthorization>
         </AuthorizationBackground>
     );
-};
-
-Registration.propTypes = {
-    login: PropTypes.string,
-    password: PropTypes.string,
-    passwordRepeat: PropTypes.string,
 };

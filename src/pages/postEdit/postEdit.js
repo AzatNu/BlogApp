@@ -1,16 +1,16 @@
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { ErrorAccess } from "../../components";
-import { selectUserRole, selectUserLogin } from "../../selectors";
+import { selectUserRole, selectUserLogin, selectPostById } from "../../selectors";
 import { ROLE } from "../../const";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect, useState } from "react";
-import { getPost } from "../../bff/api";
 import { useParams } from "react-router-dom";
 import { useRequestUpdatePostId } from "./request-update-post-id";
 import PropTypes from "prop-types";
+import { useEffect } from "react";
+import { getPost } from "../../bff/api";
 
 const editPostFormSchema = yup.object().shape({
     title: yup
@@ -33,20 +33,12 @@ const editPostFormSchema = yup.object().shape({
 });
 
 export const PostEdit = () => {
-    const [post, setPost] = useState({});
+    const post = useSelector(selectPostById);
     const { postId } = useParams();
-    useEffect(() => {
-        getPost(postId).then((data) => {
-            setPost(data);
-            setValue("title", data.title);
-            setValue("content", data.content);
-            setValue("image", data.image_url);
-        });
-    }, [postId, setValue]);
-
     const dispatch = useDispatch();
     const userRole = useSelector(selectUserRole);
     const userLogin = useSelector(selectUserLogin);
+
     const {
         register,
         handleSubmit,
@@ -54,29 +46,25 @@ export const PostEdit = () => {
         setValue,
     } = useForm({
         defaultValues: {
-            title: `${post.title}`,
-            content: `${post.content}`,
-            image: `${post.image_url}`,
+            title: post.title || "",
+            content: post.content || "",
+            image: post.image_url || "",
         },
         resolver: yupResolver(editPostFormSchema),
     });
+
     const { requestUpdatePostId } = useRequestUpdatePostId();
-    const onSubmit = (register) => {
+
+    const onSubmit = (data) => {
         dispatch(
-            requestUpdatePostId(
-                postId,
-                register.title,
-                register.content,
-                register.image,
-                userLogin
-            )
+            requestUpdatePostId(postId, data.title, data.content, data.image, userLogin)
         );
     };
 
-    const formError =
-        errors?.title?.message ||
-        errors?.content?.message ||
-        errors?.image?.message;
+    const formError = errors?.title?.message || errors?.content?.message || errors?.image?.message;
+
+    const clearField = (field) => setValue(field, "");
+
     return (
         <PostEditPage>
             {userRole !== ROLE.MODERATOR && userRole !== ROLE.ADMIN ? (
@@ -93,12 +81,12 @@ export const PostEdit = () => {
                                 type="text"
                                 placeholder="Напишите заголовок статьи"
                                 {...register("title")}
-                                onBlur={(e) => setValue(e.target.value)}
+                                onBlur={() => {}}
                             />
                             <button
                                 type="button"
                                 title="Очистить заголовок"
-                                onClick={() => setValue("title", "")}
+                                onClick={() => clearField("title")}
                             >
                                 Очистить
                             </button>
@@ -107,12 +95,12 @@ export const PostEdit = () => {
                                 type="text"
                                 placeholder="Вставьте ссылку на изображение"
                                 {...register("image")}
-                                onBlur={(e) => setValue(e.target.value)}
+                                onBlur={() => {}}
                             />
                             <button
                                 type="button"
                                 title="Очистить изображение"
-                                onClick={() => setValue("image", "")}
+                                onClick={() => clearField("image")}
                             >
                                 Очистить
                             </button>
@@ -120,12 +108,12 @@ export const PostEdit = () => {
                             <textarea
                                 placeholder="Напишите текст статьи"
                                 {...register("content")}
-                                onBlur={(e) => setValue(e.target.value)}
+                                onBlur={() => {}}
                             />
                             <button
                                 type="button"
                                 title="Очистить текст"
-                                onClick={() => setValue("content", "")}
+                                onClick={() => clearField("content")}
                             >
                                 Очистить
                             </button>

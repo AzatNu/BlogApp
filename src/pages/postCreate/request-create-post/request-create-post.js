@@ -1,25 +1,20 @@
 import { useNavigate } from "react-router-dom";
+import {request} from "../../utils/request"
 import PropTypes from "prop-types";
 
 export const useRequestCreatePost = () => {
     const backNavigate = useNavigate();
-    const date = new Date().toLocaleString("ru");
-    const requestCreatePost = (title, content, urlImg, userLogin) => {
+
+    const requestCreatePost = (data) => {
+        const {title, content, image_url, author} = data;
         return async (dispatch) => {
-            const response = await fetch("http://localhost:3005/posts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title,
-                    content,
-                    image_url: urlImg,
-                    author: userLogin,
-                    published_at: date,
-                }),
+            const response = await request("/posts", "POST", {
+                title: title,
+                content: content,
+                image_url: image_url,
+                author: author
             });
-            if (response.ok) {
+            if (response) {
                 backNavigate("/");
             }
         };
@@ -28,9 +23,6 @@ export const useRequestCreatePost = () => {
 };
 
 useRequestCreatePost.propTypes = {
-    title: PropTypes.string,
-    content: PropTypes.string,
-    urlImg: PropTypes.string,
-    userLogin: PropTypes.string,
+    requestCreatePost: PropTypes.func.isRequired,
 };
 

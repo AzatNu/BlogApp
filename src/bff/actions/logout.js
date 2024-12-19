@@ -1,8 +1,9 @@
-import { server } from "../server";
+import { request } from "../../pages/utils/request";
 
-export const logout = () => (dispatch, getState) => {
-    const { user } = getState();
-    server.logout(user.session);
+
+export const logout = () => (dispatch) => {
+
+    request("/logout","POST")
     dispatch({
         type: "LOGOUT",
     });

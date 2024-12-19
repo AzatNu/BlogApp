@@ -5,7 +5,6 @@ import { ROLE } from "../../../const";
 import {
     selectUserRole,
     selectUserLogin,
-    selectUserSession,
 } from "../../../selectors";
 import { logout } from "../../../bff/actions";
 
@@ -14,15 +13,14 @@ export const StyledControlPanel = ({ clasName }) => {
     const dispatch = useDispatch();
     const roleId = useSelector(selectUserRole);
     const login = useSelector(selectUserLogin);
-    const session = useSelector(selectUserSession);
     const onLogout = () => {
-        dispatch(logout(session));
+        dispatch(logout());
         sessionStorage.removeItem("userData");
     };
     return (
         <ControlPanel className={clasName}>
             <StyledUserLogin title={`Вы авторизовались как ${login}`}>
-                {login}
+                {login} ({roleId === ROLE.ADMIN ? "админ" : roleId === ROLE.MODERATOR ? "модератор" : "читатель"})
             </StyledUserLogin>
             <ControlPanelButton title="Назад" onClick={() => navigate(-1)}>
                 <i className="fa fa-arrow-left" aria-hidden="true"></i>
@@ -49,7 +47,17 @@ export const StyledControlPanel = ({ clasName }) => {
                     </ControlPanelButton>
                 ) : null}
             </Link>
-            {roleId === ROLE.GUEST ? (
+            {login !== null ? (
+                <ControlPanelButton
+                    title="Выĭти из аккаунта"
+                    style={{ backgroundColor: "#FF6347" }}
+                    onClick={() => {
+                        onLogout();
+                    }}
+                >
+                    <i className="fa fa-sign-out" aria-hidden="true"></i>
+                </ControlPanelButton>
+            ) : (
                 <Link to="/login" style={{ textDecoration: "none" }}>
                     <ControlPanelButton
                         title="Войти в аккаунт"
@@ -58,23 +66,12 @@ export const StyledControlPanel = ({ clasName }) => {
                         <i className="fa fa-sign-in" aria-hidden="true"></i>
                     </ControlPanelButton>
                 </Link>
-            ) : (
-                <ControlPanelButton
-                    title="Выйти из аккаунта"
-                    style={{ backgroundColor: "#FF6347" }}
-                    onClick={() => {
-                        onLogout();
-                    }}
-                >
-                    <i className="fa fa-sign-out" aria-hidden="true"></i>
-                </ControlPanelButton>
             )}
         </ControlPanel>
     );
 };
 const ControlPanel = styled.div`
     display: flex;
-    float: right;
     width: 500px;
     height: 100px;
     align-items: center;
@@ -110,5 +107,5 @@ const ControlPanelButton = styled.button`
 
 const StyledUserLogin = styled.div`
     margin-right: 20px;
-    font-size: 30px;
+    font-size: 20px;
 `;

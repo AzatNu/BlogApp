@@ -1,4 +1,21 @@
-export const getUsers = async () => {
-    const response = await fetch("http://localhost:3005/users");
-    return response.json();
+import { request } from "../../pages/utils/request";
+
+export const getUsers = () => async (dispatch) => {
+    dispatch({
+        type: "SET_IS_LOADING",
+        isLoading: true
+    })
+    try {
+        const response = await request("/users");
+        dispatch({
+            type: "SET_USERS",
+            users: response.data
+        });
+        dispatch({
+            type: "SET_IS_LOADING",
+            isLoading: false
+        })
+    } catch (error) {
+        console.error("Failed to fetch posts", error);
+    }
 };

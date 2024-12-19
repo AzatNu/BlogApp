@@ -6,6 +6,7 @@ import {
     selectDeleteButton,
     selectUserLogin,
     selectUserId,
+    selectUsers
 } from "../../selectors/index";
 import { ErrorAccess } from "../../components";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,33 +14,35 @@ import { useState, useEffect } from "react";
 import { useRequestChangeUserRole } from "./request-change-role";
 import { useRequestDeleteUser } from "./request-delete-user";
 import { ROLE } from "../../const";
-import { ConfirmationOfDeletion } from "../../components";
+import { ConfirmationOfDeletion, Loader } from "../../components";
+import { selectIsLoading } from "../../selectors/index";
 import PropTypes from "prop-types";
 
 export const Users = () => {
     const userRole = useSelector(selectUserRole);
-    const [usersList, setUsersList] = useState([]);
-    const [serch, setSerch] = useState("");
+    const [search, setSearch] = useState("");
     const dispatch = useDispatch();
+    const isLoading = useSelector(selectIsLoading);
     const updateUsersList = useSelector(selectUpdateUserList);
     const deleteButtonClick = useSelector(selectDeleteButton);
     const userLogin = useSelector(selectUserLogin);
     const userId = useSelector(selectUserId);
+    const usersList = useSelector(selectUsers);
 
     useEffect(() => {
-        getUsers().then((users) => setUsersList([...users]));
+        dispatch(getUsers());
     }, [updateUsersList]);
+
     const { changeUserRole } = useRequestChangeUserRole();
     const { deleteUser } = useRequestDeleteUser();
-    const serchUser = () => {
-        const sortedUsers = usersList.filter((user) => {
-            return user.login.toLowerCase().includes(serch.toLowerCase());
-        });
-        if (sortedUsers.length === 0) {
-            return setUsersList([...usersList]);
-        }
-        setUsersList([...sortedUsers]);
+
+    const searchHandler = (e) => {
+        setSearch(e.target.value);
     };
+    const filteredUsersList = usersList.filter(user =>
+        user.login.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
         <UsersContainer>
             {userRole !== ROLE.ADMIN ? (
@@ -48,7 +51,6 @@ export const Users = () => {
                 </ErrorAccess>
             ) : (
                 <>
-                    {}
                     {deleteButtonClick ? (
                         <ConfirmationOfDeletion>
                             <h3>
@@ -64,8 +66,7 @@ export const Users = () => {
                                         dispatch(deleteUser(userId));
                                         dispatch({
                                             type: "DELETE_USER_BUTTON_CLICK",
-                                            deleteButtonClick:
-                                                !deleteButtonClick,
+                                            deleteButtonClick: !deleteButtonClick,
                                         });
                                         dispatch({
                                             type: "SET_USER_ID",
@@ -83,8 +84,7 @@ export const Users = () => {
                                         });
                                         dispatch({
                                             type: "DELETE_USER_BUTTON_CLICK",
-                                            deleteButtonClick:
-                                                !deleteButtonClick,
+                                            deleteButtonClick: !deleteButtonClick,
                                         });
                                     }}
                                 ></button>
@@ -98,89 +98,81 @@ export const Users = () => {
                             <SerchUser>
                                 <input
                                     type="text"
-                                    value={serch}
-                                    onChange={(event) =>
-                                        setSerch(event.target.value)
-                                    }
+                                    value={search}
+                                    onChange={searchHandler}
                                     placeholder="Поиск по логину пользователя..."
                                 />
                                 <button
                                     title="Сбросить поиск"
                                     className="fa fa-refresh"
                                     onClick={() => {
-                                        setSerch("");
-                                        getUsers().then((users) =>
-                                            setUsersList([...users])
-                                        );
-                                    }}
-                                ></button>
-                                <button
-                                    title="Найти пользователя"
-                                    className="fa fa-search"
-                                    onClick={() => {
-                                        serchUser();
+                                        setSearch("");
+                                        dispatch(getUsers());
                                     }}
                                 ></button>
                             </SerchUser>
                             <div>
                                 <div>
-                                    {" "}
                                     <span>Логин</span>
                                     <span>Дата регистрации</span>
                                     <span>Роль</span>
                                     <span>Настройки</span>
                                 </div>
-                                {usersList.map((user, index) => (
-                                    <User key={index}>
-                                        <span>{user.login}</span>
-                                        <span>{user.registred_at}</span>
-                                        <select
-                                            value={user.role_id}
-                                            onChange={(event) => {
-                                                dispatch(
-                                                    changeUserRole(
-                                                        user.id,
-                                                        event.target.value
-                                                    )
-                                                );
-                                            }}
-                                        >
-                                            <option value="0">
-                                                Администратор
-                                            </option>
-                                            <option value="1">Модератор</option>
-                                            <option value="2">
-                                                Пользователь
-                                            </option>
-                                        </select>
-                                        <span>
-                                            {user.login !== userLogin ? (
-                                                <button
-                                                    className="fa fa-user-times"
-                                                    title="удалить пользователя"
-                                                    onClick={() => {
-                                                        dispatch({
-                                                            type: "DELETE_USER_BUTTON_CLICK",
-                                                            deleteButtonClick:
-                                                                !deleteButtonClick,
-                                                        });
-                                                        dispatch({
-                                                            type: "SET_USER_ID",
-                                                            userId: user.id,
-                                                        });
-                                                        dispatch({
-                                                            type: "SET_USER_LOGIN",
-                                                            userLogin:
-                                                                user.login,
-                                                        });
-                                                    }}
-                                                ></button>
-                                            ) : (
-                                                <p>Вы</p>
-                                            )}
-                                        </span>
-                                    </User>
-                                ))}
+                                {isLoading ? (
+                                    <Loader />
+                                ) : (
+                                    filteredUsersList.map((user, index) => (
+                                        <User key={index}>
+                                            <span>{user.login}</span>
+                                            <span>{user.registred_at}</span>
+                                            <select
+                                                value={user.role}
+                                                onChange={(event) => {
+                                                    dispatch(
+                                                        changeUserRole(
+                                                            user.id,
+                                                            event.target.value
+                                                        )
+                                                    );
+                                                }}
+                                            >
+                                                <option value="0">
+                                                    Администратор
+                                                </option>
+                                                <option value="1">
+                                                    Модератор
+                                                </option>
+                                                <option value="2">
+                                                    Пользователь
+                                                </option>
+                                            </select>
+                                            <span>
+                                                {user.login !== userLogin ? (
+                                                    <button
+                                                        className="fa fa-user-times"
+                                                        title="удалить пользователя"
+                                                        onClick={() => {
+                                                            dispatch({
+                                                                type: "DELETE_USER_BUTTON_CLICK",
+                                                                deleteButtonClick: !deleteButtonClick,
+                                                            });
+                                                            dispatch({
+                                                                type: "SET_USER_ID",
+                                                                userId: user.id,
+                                                            });
+                                                            dispatch({
+                                                                type: "SET_USER_LOGIN",
+                                                                userLogin: user.login,
+                                                            });
+                                                        }}
+                                                    ></button>
+                                                ) : (
+                                                    <p>Вы</p>
+                                                )}
+                                            </span>
+                                        </User>
+                                    ))
+                                )}
                             </div>
                         </>
                     )}
@@ -189,6 +181,7 @@ export const Users = () => {
         </UsersContainer>
     );
 };
+
 const SerchUser = styled.div`
    width: 900px;
     height: 50px;

@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { server } from "../../bff/server";
+import { request } from "../utils/request";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -45,14 +45,17 @@ export const Authorization = () => {
     const [serverError, setServerError] = useState(null);
 
     const onSubmit = ({ login, password }) => {
-        server.authorize(login, password).then(({ error, res }) => {
+        request("/login","POST",{login,password}).then(({ error, user }) => {
             if (error) {
                 setServerError(`${error}`);
                 return;
             }
-            dispatch(setUser(res));
-            sessionStorage.setItem("userData", JSON.stringify(res));
-            navigate("/");
+            if (user) {
+              dispatch({type:"SET_USER", id:user.id, login:user.login, role:user.role, registrate_at:user.registrate_at});
+                navigate("/");
+            } else {
+                console.error("Ошибка: пользователь не найден");
+            }
         });
     };
     const formError =

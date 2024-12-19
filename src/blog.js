@@ -11,9 +11,7 @@ import {
     Error
 } from "./pages/index";
 import { useDispatch } from "react-redux";
-import { setUser } from "./bff/actions";
 import styled from "styled-components";
-import { useLayoutEffect } from "react";
 
 
 const AppColumn = styled.div`
@@ -32,14 +30,6 @@ const AppColumn = styled.div`
 export const Blog = () => {
     const dispatch = useDispatch();
 
-    useLayoutEffect(() => {
-        const currentUserData = sessionStorage.getItem('userData');
-        if (!currentUserData) {
-            return;
-        }
-        const currentUserDataJSON = JSON.parse(currentUserData);
-        dispatch(setUser(currentUserDataJSON));
-    }, [dispatch]);
     return (
         <AppColumn>
             <StyledHeader />

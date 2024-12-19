@@ -1,40 +1,41 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { getComments, getPosts } from "../../bff/api";
+import {  getPosts } from "../../bff/api";
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { selectGetPosts,selectIsLoading } from "../../selectors";
+import { useDispatch, useSelector } from "react-redux";
 
 export const Post = () => {
-    const [posts, setPosts] = useState([]);
+    const posts = useSelector(selectGetPosts);
+    const isLoading = useSelector(selectIsLoading)
     const [searchQuery, setSearchQuery] = useState("");
-    const [comments, setComments] = useState([]);
+    const [postsPerPage, setPostsPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
-    const postsPerPage = 10;
+    const dispatch = useDispatch();
+
     useEffect(() => {
-        getPosts().then((data) => setPosts(data));
-    }, []);
-    useEffect(() => {
-        getComments().then((data) => setComments(data));
-    }, []);
-    const searchInPosts = () => {
-        const filteredPosts = posts.filter((post) =>
-            post.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setPosts(filteredPosts);
-    };
+        dispatch(getPosts());
+    }, [dispatch]);
+
+    const filteredPosts = posts.posts?.filter((post) =>
+        post.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const currentPosts = filteredPosts?.slice(indexOfFirstPost, indexOfLastPost);
+
     return (
         <>
             <PostPage>
                 <h2 className="fa fa-file-text"> Главная</h2>
                 <SearchInPosts>
                     <input
-                        placeholder="Напишите заголовок статьи, которую хотите найти"
+                        placeholder="Напишите заголовок статьи, которую хотите найти"
                         value={searchQuery}
                         onChange={(e) => {
+                            dispatch(getPosts());
                             setSearchQuery(e.target.value);
                         }}
                     />
@@ -42,66 +43,47 @@ export const Post = () => {
                         className="fa fa-refresh"
                         title="Сбросить поиск"
                         onClick={() => {
-                            getPosts().then((data) => setPosts(data));
+                            dispatch(getPosts());
                             setSearchQuery("");
-                        }}
-                    ></button>
-                    <button
-                        className="fa fa-search"
-                        title="Поиск"
-                        onClick={() => {
-                            searchInPosts();
                         }}
                     ></button>
                 </SearchInPosts>
                 <PostContainer>
-                    {currentPosts.map((post) => (
+                    {currentPosts?.map((post) => (
                         <Link to={`/post/${post.id}`} key={post.id}>
                             <div>
                                 <p className="fa fa-comment">
                                     {
-                                        comments.filter(
-                                            (comment) =>
-                                                comment.post_id === post.id
-                                        ).length
+                                        post.comments?.length
                                     }
                                 </p>
                                 <img src={post.image_url} alt="post" />
                                 <h2>
                                     {post.title}
-                                    <br /> ({post.published_at})
+                                    <br /> ({new Date(post.published_at).toLocaleDateString("ru-RU")})
                                 </h2>
                             </div>
                         </Link>
                     ))}
                 </PostContainer>
-                <h3>Странциа: {currentPage}</h3>
-            </PostPage>
-            <Pagination>
-                <button
-                    title="Перейти в начало"
-                    className="fa fa-arrow-left"
-                    onClick={() => paginate(1)}
-                ></button>
-                {Array.from(
-                    { length: Math.ceil(posts.length / postsPerPage) },
-                    (_, i) => (
-                        <button key={i + 1} onClick={() => paginate(i + 1)}>
+                <Pagination>
+                    <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                        &laquo;
+                    </button>
+                    {Array.from({ length: Math.ceil(filteredPosts?.length / postsPerPage) }, (_, i) => (
+                        <button key={i} onClick={() => setCurrentPage(i + 1)}>
                             {i + 1}
                         </button>
-                    )
-                )}
-                <button
-                    title="Перейти в конец"
-                    className="fa fa-arrow-right"
-                    onClick={() =>
-                        paginate(Math.ceil(posts.length / postsPerPage))
-                    }
-                ></button>
-            </Pagination>
+                    ))}
+                    <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === Math.ceil(filteredPosts?.length / postsPerPage)}>
+                        &raquo;
+                    </button>
+                </Pagination>
+            </PostPage>
         </>
     );
 };
+
 const Pagination = styled.div`
     display: flex;
     align-items: center;
@@ -260,3 +242,4 @@ PostPage.propTypes = {
         })
     ),
 };
+

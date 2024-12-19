@@ -1,23 +1,22 @@
 import { useNavigate } from "react-router-dom";
+import {request} from "../../utils/request"
 import PropTypes from "prop-types";
 export const useRequestUpdatePostId = () => {
     const backNavigate = useNavigate();
     const requestUpdatePostId = (id, title, content, urlImg, userLogin) => {
         return async (dispatch) => {
-            const response = await fetch(`http://localhost:3005/posts/${id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
+            try {
+                const response = await request(`/posts/${id}`, "PATCH", {
                     title: title,
                     content: content,
                     image_url: urlImg,
                     author: userLogin,
-                }),
-            });
-            if (response.ok) {
-                backNavigate("/");
+                });
+                if (response) {
+                    backNavigate(-1);
+                }
+            } catch (error) {
+                console.error("Failed to update post", error);
             }
         };
     };

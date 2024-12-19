@@ -6,3 +6,10 @@ export * from "./select-delete-button-click";
 export * from "./select-delete-user-login";
 export * from "./select-user-id";
 export * from "./select-delete-post-button-click";
+export * from  "./select-get-posts"
+export * from  "./select-get-post-by-id"
+export * from "./select-is-loading"
+export * from "./select-refresh-post"
+export * from "./select-refresh-comments"
+export * from "./select-create-button-cliked"
+export * from "./select-users"

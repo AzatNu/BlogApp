@@ -1,22 +1,17 @@
 import { useNavigate} from "react-router-dom";
+import { request } from "../../../utils/request";
 
 export const useRequestDeletePost = () => {
-    const backNavigate = useNavigate();
-    const requestDeletePost=(id)=>{
+    const navigate = useNavigate();
+    const requestDeletePost = (id) => {
         return async (dispatch) => {
-            const response = await fetch(`http://localhost:3005/posts/${id}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
+            await request(`/posts/${id}`, "DELETE");
                 dispatch({
                     type: "SET_DELETE_POST_BUTTON_CLICK",
                     deletePostButtonClick: false,
                 });
-                backNavigate("/");
-            } else {
-                console.error("Ошибка удаления поста");
-            }
+                navigate("/");
         };
-    }
+    };
     return { requestDeletePost };
-}
+};
